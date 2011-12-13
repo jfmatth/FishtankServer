@@ -3,7 +3,7 @@
 ###
 
 from django.contrib import admin
-from mserver.dtracker.models import Torrent, Torrentclient
+from dtracker.models import Torrent, Torrentclient
 
 class TorrentClientInline(admin.StackedInline):
 	model = Torrentclient

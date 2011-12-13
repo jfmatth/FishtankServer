@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import *
-from mserver.dtracker.models import Torrent, Torrentclient
+from dtracker.models import Torrent, Torrentclient
 from django.views.generic.list_detail import object_list
 
 # Databrowse suppot #
@@ -11,7 +11,7 @@ from django.views.generic import list_detail
 
 info_dict = {'queryset':Torrent.objects.all(),}
 
-urlpatterns = patterns('mserver.dtracker.views',
+urlpatterns = patterns('dtracker.views',
 	# Main menu
  	#(r'^$',                             'main'),
 

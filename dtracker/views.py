@@ -11,9 +11,9 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.list_detail import object_list
 
-from mserver.dtracker.bencode import bencode
-from mserver.dtracker.models import Torrent, Torrentclient
-from mserver.dtracker.forms import TorrentUploadForm
+from dtracker.bencode import bencode
+from dtracker.models import Torrent, Torrentclient
+from dtracker.forms import TorrentUploadForm
 
 def main(request):
 	
