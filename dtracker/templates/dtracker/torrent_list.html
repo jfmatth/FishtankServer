@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>torrentclient_list</title>
+	<meta name="generator" content="TextMate http://macromates.com/">
+	<meta name="author" content="John">
+	<!-- Date: 2008-08-14 -->
+
+		{% for torrent in object_list %}
+			<h1> Torrent <a href="/backup/download/{{torrent.id}}"> {{ torrent.name }} </a> </h1>
+			
+			{% for client in torrent.torrentclient_set.all %}
+				<li>{{ client.ip }}  
+					{% if client.stopped %}
+					 	<font color="#ff0000">Stopped </font>
+					{% else %}
+					 	<font color="#347C17">Running </font>
+					{% endif %}
+				 </li>
+			{% endfor %}
+			
+		{% endfor %} 
+		
+	
+</head>
+<body>
+
+</body>
+</html>

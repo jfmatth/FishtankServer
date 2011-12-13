@@ -1,0 +1,4 @@
+/torrents
+*.pyc
+*.sq3
+runserver.cmd
