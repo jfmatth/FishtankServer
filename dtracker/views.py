@@ -106,8 +106,8 @@ def uploadsuccess(request):
 	if request.GET.has_key('id'):
 		return HttpResponse("Sucess, your file was uploaded correctly.  ID = %s" % request.GET['id'])
 
-def downloadtorrent(request, torrent_id):
-	t = get_object_or_404(Torrent, pk=torrent_id)
+def downloadtorrent(request, torrent_hash):
+	t = get_object_or_404(Torrent, info_hash=torrent_hash)
 	
 	response = HttpResponse(open(t.file_path.path, "rb").read())
 	response['Content-Type']='application/force-download'
