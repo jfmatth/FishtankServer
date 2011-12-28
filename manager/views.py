@@ -1,5 +1,7 @@
 from django.http import HttpResponse, HttpResponseBadRequest
 
+from django import forms
+
 from manager.models import ManagedClient, ClientSetting 
 from django.contrib.auth.models import User
 
@@ -11,6 +13,11 @@ GLOBALKEY = "__global__"
 
 CLIENTEXE = "client.exe"
 
+# testing form
+class UploadFileForm(forms.Form):
+    myfield = forms.CharField(max_length=20)
+    xfile  = forms.FileField()
+
 def main(request):
     return HttpResponse("Nothing yet")
 
@@ -21,6 +28,22 @@ def download(request):
     return response 
 
 
+def uploadtest(request):
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            print "and the contents of the file are?"
+            for c in request.FILES['xfile'].chunks():
+                print c
+            print "and the fields are"
+            print form['myfield'].value()
+            return HttpResponse("valid")
+        else:
+            print form.errors
+            return HttpResponse("something bad")
+    else:
+            return HttpResponse("GET no good here")
+    
 def register(request):
     
     try:
