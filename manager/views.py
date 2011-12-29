@@ -15,9 +15,14 @@ CLIENTEXE = "client.exe"
 
 # testing form
 class UploadFileForm(forms.Form):
-    myfield = forms.CharField(max_length=20)
+    myfield = forms.CharField(max_length=20, required=False)
     xfile  = forms.FileField()
 
+class dbmForm(forms.Form):
+	eKey = forms.CharField(max_length=100)
+	dFilename = forms.CharField(max_length=20)
+	dFile = forms.FileField()
+	
 def main(request):
     return HttpResponse("Nothing yet")
 
@@ -27,7 +32,19 @@ def download(request):
     response['Content-disposition'] = 'attachment; filename=%s' % CLIENTEXE
     return response 
 
+def dbmupload(request):
+    if request.method == 'POST':
+        form = dbmForm(request.POST, request.FILES)
+        if form.is_valid():
+			print "Received dbm file and data"
+            return HttpResponse("valid")
+        else:
+            print form.errors
+            return HttpResponse("something bad")
+    else:
+            return HttpResponse("GET no good here")
 
+	
 def uploadtest(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)

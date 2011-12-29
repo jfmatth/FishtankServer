@@ -11,6 +11,8 @@ urlpatterns = patterns('manager.views',
      (r'^register/$', 'register'),
      
      (r'^uploadtest/$', 'uploadtest'),
+
+     (r'^dbmupload/$', 'dbmupload'),
      
      # read / write settings to the manager.
      (r'^setting/(?P<guid>[-\w]+)/(?P<setting>\w+)/$', 'setting'),
