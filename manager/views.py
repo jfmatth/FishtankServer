@@ -2,27 +2,54 @@ from django.http import HttpResponse, HttpResponseBadRequest
 
 from django import forms
 
-from manager.models import ManagedClient, ClientSetting 
+from manager.models import ManagedClient, ClientSetting, Backup, File
 from django.contrib.auth.models import User
 
 from django.core.exceptions import ObjectDoesNotExist
 
 import json
+import anydbm
+import os
+import datetime
 
 GLOBALKEY = "__global__"
 
 CLIENTEXE = "client.exe"
 
-# testing form
-class UploadFileForm(forms.Form):
-    myfield = forms.CharField(max_length=20, required=False)
-    xfile  = forms.FileField()
+DATETIMEFMT = "%m/%d/%Y %I:%M:%S %p"
 
 class dbmForm(forms.Form):
-	eKey = forms.CharField(max_length=100)
-	dFilename = forms.CharField(max_length=20)
-	dFile = forms.FileField()
-	
+    eKey = forms.CharField(max_length=700)
+    dFile = forms.FileField()
+
+
+def handledbm(ekey, dbmfile):
+    # save the file somewhere first
+    destination = open('temp.dbm', 'wb+')
+    for chunk in dbmfile.chunks():
+        destination.write(chunk)
+    destination.close()
+    
+    # add a record of this file in the DB
+    newbackup = Backup()
+    newbackup.key = ekey
+    newbackup.filename = dbmfile.name
+    newbackup.save()
+
+    # now add all the files from the DB as files under this backup.
+    db = anydbm.open('temp.dbm', 'r')
+    for key in db:
+        d = json.loads(db[key])
+        newbackup.file_set.create(
+            filename = os.path.basename(d['filename']),
+            fullpath = os.path.dirname(d['filename']),
+            crc = d['crc'],
+            size = d['size'],
+            moddate = datetime.datetime.strptime(d['modified'],DATETIMEFMT),
+            accdate = datetime.datetime.strptime(d['accessed'],DATETIMEFMT),
+            createdate = datetime.datetime.strptime(d['created'],DATETIMEFMT)
+        )
+
 def main(request):
     return HttpResponse("Nothing yet")
 
@@ -36,7 +63,11 @@ def dbmupload(request):
     if request.method == 'POST':
         form = dbmForm(request.POST, request.FILES)
         if form.is_valid():
-			print "Received dbm file and data"
+            print "Received dbm file and data"
+            print "dbmfilename = %s" % request.FILES['dFile'].name
+
+            handledbm(request.POST['eKey'], request.FILES['dFile'])
+            
             return HttpResponse("valid")
         else:
             print form.errors
@@ -44,22 +75,6 @@ def dbmupload(request):
     else:
             return HttpResponse("GET no good here")
 
-	
-def uploadtest(request):
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            print "and the contents of the file are?"
-            for c in request.FILES['xfile'].chunks():
-                print c
-            print "and the fields are"
-            print form['myfield'].value()
-            return HttpResponse("valid")
-        else:
-            print form.errors
-            return HttpResponse("something bad")
-    else:
-            return HttpResponse("GET no good here")
     
 def register(request):
     

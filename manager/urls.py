@@ -10,8 +10,6 @@ urlpatterns = patterns('manager.views',
      # provides to register a new client to be managed.
      (r'^register/$', 'register'),
      
-     (r'^uploadtest/$', 'uploadtest'),
-
      (r'^dbmupload/$', 'dbmupload'),
      
      # read / write settings to the manager.
