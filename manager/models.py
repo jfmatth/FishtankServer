@@ -63,8 +63,10 @@ class Backup(models.Model):
     filename = models.CharField(max_length=100)  # name of the .zip file in the cloud.
     date = models.DateTimeField(default=datetime.datetime.now() )
     
+    client = models.ForeignKey(ManagedClient)
+    
     def __unicode__(self):
-        return self.filename
+        return "%s %s" % (self.client,self.date)
     
 class File(models.Model):
     filename = models.CharField(max_length=100)
@@ -78,4 +80,4 @@ class File(models.Model):
     backup = models.ForeignKey(Backup)
     
     def __unicode__(self):
-        return self.filename
+        return "%s\\%s" % (self.fullpath,self.filename)

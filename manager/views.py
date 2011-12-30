@@ -20,35 +20,46 @@ DATETIMEFMT = "%m/%d/%Y %I:%M:%S %p"
 
 class dbmForm(forms.Form):
     eKey = forms.CharField(max_length=700)
+    guid = forms.CharField(max_length=50)
     dFile = forms.FileField()
 
 
-def handledbm(ekey, dbmfile):
-    # save the file somewhere first
-    destination = open('temp.dbm', 'wb+')
-    for chunk in dbmfile.chunks():
-        destination.write(chunk)
-    destination.close()
+def handledbm(ekey, guid, dbmfile):
     
-    # add a record of this file in the DB
-    newbackup = Backup()
-    newbackup.key = ekey
-    newbackup.filename = dbmfile.name
-    newbackup.save()
-
-    # now add all the files from the DB as files under this backup.
-    db = anydbm.open('temp.dbm', 'r')
-    for key in db:
-        d = json.loads(db[key])
-        newbackup.file_set.create(
-            filename = os.path.basename(d['filename']),
-            fullpath = os.path.dirname(d['filename']),
-            crc = d['crc'],
-            size = d['size'],
-            moddate = datetime.datetime.strptime(d['modified'],DATETIMEFMT),
-            accdate = datetime.datetime.strptime(d['accessed'],DATETIMEFMT),
-            createdate = datetime.datetime.strptime(d['created'],DATETIMEFMT)
-        )
+    # first, find the client this data belongs to
+    try:
+        client = ManagedClient.objects.get(guid=guid)
+    
+        # save the file somewhere first
+        destination = open('temp.dbm', 'wb+')
+        for chunk in dbmfile.chunks():
+            destination.write(chunk)
+        destination.close()
+        
+        # add a record of this file in the DB
+        newbackup = Backup()
+        newbackup.key = ekey
+        newbackup.filename = dbmfile.name
+        newbackup.client = client
+        newbackup.save()
+    
+        # now add all the files from the DB as files under this backup.
+        db = anydbm.open('temp.dbm', 'r')
+        for key in db:
+            d = json.loads(db[key])
+            newbackup.file_set.create(
+                filename = os.path.basename(d['filename']),
+                fullpath = os.path.dirname(d['filename']),
+                crc = d['crc'],
+                size = d['size'],
+                moddate = datetime.datetime.strptime(d['modified'],DATETIMEFMT),
+                accdate = datetime.datetime.strptime(d['accessed'],DATETIMEFMT),
+                createdate = datetime.datetime.strptime(d['created'],DATETIMEFMT)
+            )
+            
+        return True
+    except ObjectDoesNotExist:
+        return False
 
 def main(request):
     return HttpResponse("Nothing yet")
@@ -63,14 +74,11 @@ def dbmupload(request):
     if request.method == 'POST':
         form = dbmForm(request.POST, request.FILES)
         if form.is_valid():
-            print "Received dbm file and data"
-            print "dbmfilename = %s" % request.FILES['dFile'].name
-
-            handledbm(request.POST['eKey'], request.FILES['dFile'])
-            
-            return HttpResponse("valid")
+            if handledbm(request.POST['eKey'],request.POST['guid'], request.FILES['dFile']):
+                return HttpResponse("valid")
+            else:
+                return HttpResponse("Unable to injest")
         else:
-            print form.errors
             return HttpResponse("something bad")
     else:
             return HttpResponse("GET no good here")
