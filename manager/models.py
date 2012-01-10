@@ -1,10 +1,12 @@
 from django.db import models
 
 import uuid
+import datetime
 
 #public key support
 from Crypto.PublicKey import RSA
 from Crypto import Random
+
 
 from django.contrib.auth.models import User
 
@@ -55,3 +57,27 @@ class ClientSetting(models.Model):
     
     def __unicode__(self):
         return "%s, %s = %s" %(self.client,self.name,self.value)
+
+class Backup(models.Model):
+    key = models.TextField()   # encrypted key of the zip file.
+    filename = models.CharField(max_length=100)  # name of the .zip file in the cloud.
+    date = models.DateTimeField(default=datetime.datetime.now() )
+    
+    client = models.ForeignKey(ManagedClient)
+    
+    def __unicode__(self):
+        return "%s %s" % (self.client,self.date)
+    
+class File(models.Model):
+    filename = models.CharField(max_length=100)
+    fullpath = models.CharField(max_length=255)
+    crc = models.CharField(max_length=50)
+    size = models.IntegerField()
+    moddate = models.DateTimeField()
+    accdate = models.DateTimeField()
+    createdate = models.DateTimeField()
+    
+    backup = models.ForeignKey(Backup)
+    
+    def __unicode__(self):
+        return "%s\\%s" % (self.fullpath,self.filename)
