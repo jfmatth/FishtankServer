@@ -85,52 +85,34 @@ def dbmupload(request):
 
     
 def register(request):
+
+    returnstr = ""
     
+    # validate the user ID and password
     try:
-    
-        returnstr = "Here's what u sent me:"
-        if 'user' in request.POST:
-            returnstr += request.POST['user']
-        if 'password' in request.POST:
-            returnstr += request.POST['password']
-        if 'macaddr' in request.POST:
-            returnstr += request.POST['macaddr']
-        if 'ipaddr' in request.POST:
-            returnstr += request.POST['ipaddr']
-        if 'hostname' in request.POST:
-            returnstr += request.POST['hostname']
-    
-        # validate the user ID and password
-        try:
-            user = User.objects.get(pk=request.POST['user'])
-            
-            if user.check_password(request.POST['password']):
-                returnstr += "Logged in successfully "
-            else:
-                returnstr += "Failed Login "
-        except:
-            returnstr += "Exception on finding user "
-    
-        # try to find this client on the list of managed clients.
-        # user should have our user object, we need to see if our hostname + macaddr combo is here or not, if
-        # not, add it and generate a GUID and PEERID setting.
-        try:
-            mc = user.managedclient_set.get(hostname__exact = request.POST['hostname'],
-                                            macaddr__exact  = request.POST['macaddr'] )
-            returnstr += "found client "
-        except ObjectDoesNotExist:
-            mc = user.managedclient_set.create(hostname=request.POST['hostname'],
-                                               macaddr = request.POST['macaddr'],
-                                               )
-            returnstr += "creating client "
+        user = User.objects.get(pk=request.POST['userid'])
+        
+        if not user.check_password(request.POST['password']):
+            return HttpResponseBadRequest("Unable to login")
+        
+    except ObjectDoesNotExist:
+        return HttpResponseBadRequest("Unable to login")
 
-    finally:
-        returnstr += mc.hostname
+    # try to find this client on the list of managed clients.
+    # user should have our user object, we need to see if our hostname + macaddr combo is here or not, if
+    # not, add it and generate a GUID and PEERID setting.
+    try:
+        mc = user.managedclient_set.get(hostname__exact = request.POST['hostname'],
+                                        macaddr__exact  = request.POST['macaddr'] )
+    except ObjectDoesNotExist:
+        mc = user.managedclient_set.create(hostname=request.POST['hostname'],
+                                           macaddr = request.POST['macaddr'],
+                                           )
 
-        # we are going to return a JSON object now :)
-        body = json.dumps({'guid':mc.guid, 'publickey':mc.publickey, 'returnstr':returnstr} )
+    # we are going to return a JSON object now :)
+    body = json.dumps({'guid':mc.guid, 'publickey':mc.publickey, 'returnstr':returnstr} )
     
-        return HttpResponse(body)
+    return HttpResponse(body)
     
 def setting(request, guid, setting):
     # allows for reading and writing 
