@@ -137,18 +137,29 @@ def setting(request, guid, setting):
     if request.method == 'GET':
         # requesting a setting
         
-        try:
-            value = ClientSetting.objects.get(client__guid__exact=guid,
-                                              name__exact=setting).value
-            return HttpResponse(value)
-        except ObjectDoesNotExist:
-            # Check for global variables.
+        # check to see if we are asking for a client field value with # in the name?
+        if setting[0] == "_":
             try:
-                value = ClientSetting.objects.get(client__guid__exact=GLOBALKEY,
+                client = ManagedClient.objects.get(guid__exact=guid)
+                
+                # go through all the client's fields, and see if we find a match
+                fieldname = setting[1:]
+                return HttpResponse( getattr(client,fieldname) )
+            except:
+                return HttpResponseBadRequest("%s not found" % setting)
+        else:      
+            try:
+                value = ClientSetting.objects.get(client__guid__exact=guid,
                                                   name__exact=setting).value
                 return HttpResponse(value)
-            except:
-                return HttpResponseBadRequest("Key Not found")
+            except ObjectDoesNotExist:
+                # Check for global variables.
+                try:
+                    value = ClientSetting.objects.get(client__guid__exact=GLOBALKEY,
+                                                      name__exact=setting).value
+                    return HttpResponse(value)
+                except:
+                    return HttpResponseBadRequest("Key Not found")
         
     if request.method == 'POST':
         if guid == GLOBALKEY:
