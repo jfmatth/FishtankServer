@@ -1,61 +1,88 @@
 [
-    {
-        "pk": 2, 
-        "model": "auth.user", 
-        "fields": {
-            "username": "Test Company", 
-            "first_name": "", 
-            "last_name": "", 
-            "is_active": true, 
-            "is_superuser": false, 
-            "is_staff": false, 
-            "last_login": "2012-01-02 10:55:45", 
-            "groups": [], 
-            "user_permissions": [], 
-            "password": "sha1$9cf8f$50c41a3f5349577dfd2dc4eab9b17fa40124600e", 
-            "email": "", 
-            "date_joined": "2012-01-02 10:55:45"
-        }
-    }, 
-    {
-        "pk": 1, 
-        "model": "manager.managedclient", 
-        "fields": {
-            "macaddr": "00", 
-            "ipaddr": "", 
-            "company": 1, 
-            "hostname": "GLOBAL", 
-            "privatekey": "-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEAkZg3s17ys70vrz2BHbfm8OJ63fzaBr8XQ93od+Ur/nEtfsNX\nPXIAdTDlSCHw9yfL5llUnk6dJybBdviBHWfDqAXe7uKwAp5PXBH12r5vsF3+JHW6\nl34X10cBbuSq6pkVPP7sSsDFIu03tT/sqQ106xdYmc6z5K0O+9L/dKlIe/5olVa0\nHZXYKCJ2+fQ/AXO5kK+qB6b0mv/9oNaXnWxBMdCU8r456gzbQioPQQSfm5oVn3G8\n1piryjHbq9loJVS8JiVbvyi10hHangIIrFWN9B6AUN6fnjXxrYn994Om8JcLpeTl\n69lxetFCYAtotR42xleC1Gqo/d5jZblmmfKBZQIDAQABAoIBACIQL+/6ZeQhfheM\n1zmBvjlbc42eS9BKQwIw1+O9LWbRSeifgTiyBGNmti4DKuJYYD8bZU3IbMItMhRI\nncSoc0FLZlYTmURzj3OmDBRKe80SoJQdKzOoX6GRTkeInmhWun5T0irHIRhD0cXJ\nF/CRYmpiQutxTetRhfDq87Nyq6++gpbSS4lp1mWaece0uS7/MAs6rtf2zuanwBQ0\ntzDjkjjaz/St9hIJeJjRmu0kZNALVEVjZ2RFiSrxutAjKozewOU5ruIOFyLsgeLS\nrNfFYpj1xyl6mUGvnCgDtpZhLsug/6Zs5r+/CtZFE1nV1Eg/Ae1GqsEvkJlYR6Qu\nzHmfPCECgYEAvnKhPKdUA7FdSE0x6XhTKIha6ccQcKoCNezmU5c1MPzfqIrZya6T\nmZfxgOoAmAscZTtiXuQEK2BXuNr4IgHvb5884wq7uDqPUnL87q6jZtNIOcebqRpo\n0Ay69iyYvqJRDMPbxPeC6zGILpchRxpkjCr9Kah2psrgrRqq61L13c0CgYEAw7VV\nzyd+7H+0acJOJf11dxAzDqVe9Awg0BF9X7I4rlPg1OgE2XvpRrPIzBG9FsRlggfe\nvDO2Yx7jgasQWGLrQUYzjTqDCvcRL5LPR3annIurJc7FZYnhgM09LkI7LdB9NGc+\nc/CEoRQCiv7wm3vqkPC590TKn21UNuDP/nv32fkCgYAp/bhTWUmK7uZ0dKDWq3Ma\ncsYo2X1kefe20B8Quzw9KuRdkw/mChn9OaVEGVQ8Meb24xsTdQ7+SWXOGmmvheG3\nKNMR9GHjgvXq5fOi5NqeZ2N7aemGZY5KoSPv93FORxe7ysuAKFqzZN5z91qdBNK6\nnRfowX431G+pe0HIVShk2QKBgC7YTeTa+FeVrdKOzvPq+l34g7Aix1q1OHl1ZkQs\nvcKEk1GDA/4m2cyxpgOqz08OzZlVVuxHmIWbVCuqjawKaXNjYV2RvuI2B2gSxQi/\nDxm6mMng94D5gv+4oMdc1Rt/Ryju+ZT44lZIGt+4bFFbVOdCp9DXJ4UHv1uvbjnk\n5IvJAoGBAJ4bmiEse0lZ/xq5V990FdpaAiATZdoc81aFjAYLM55Tv0EavwwAfLX5\nc5Pe3g9PwG+LSFAyFrLCou7bKcXjHxUu9+y/xwXB/QUP3xJP3fMs0SeoCjjStHFr\n1jw/Bx5PNFYc5e6YNh8WnQhdkDtggwwC1gNM9Du/nXPSqRzx59eX\n-----END RSA PRIVATE KEY-----", 
-            "publickey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkZg3s17ys70vrz2BHbfm\n8OJ63fzaBr8XQ93od+Ur/nEtfsNXPXIAdTDlSCHw9yfL5llUnk6dJybBdviBHWfD\nqAXe7uKwAp5PXBH12r5vsF3+JHW6l34X10cBbuSq6pkVPP7sSsDFIu03tT/sqQ10\n6xdYmc6z5K0O+9L/dKlIe/5olVa0HZXYKCJ2+fQ/AXO5kK+qB6b0mv/9oNaXnWxB\nMdCU8r456gzbQioPQQSfm5oVn3G81piryjHbq9loJVS8JiVbvyi10hHangIIrFWN\n9B6AUN6fnjXxrYn994Om8JcLpeTl69lxetFCYAtotR42xleC1Gqo/d5jZblmmfKB\nZQIDAQAB\n-----END PUBLIC KEY-----", 
-            "peerid": "b47e0f91-838c-4a9c-9a67-3f459fbde952", 
-            "guid": "6555dea7-95a4-481c-8445-803c75be61a2"
-        }
-    }, 
-    {
-        "pk": 1, 
-        "model": "manager.clientsetting", 
-        "fields": {
-            "client": 1, 
-            "name": "filespec", 
-            "value": ".+\\.txt$"
-        }
-    }, 
-    {
-        "pk": 2, 
-        "model": "manager.clientsetting", 
-        "fields": {
-            "client": 1, 
-            "name": "drives", 
-            "value": "c:/"
-        }
-    }, 
-    {
-        "pk": 3, 
-        "model": "manager.clientsetting", 
-        "fields": {
-            "client": 1, 
-            "name": "block_sz", 
-            "value": "4096"
-        }
+  {
+    "pk": 1, 
+    "model": "manager.managedclient", 
+    "fields": {
+      "macaddr": "00", 
+      "ipaddr": "", 
+      "company": 1, 
+      "hostname": "global", 
+      "privatekey": "n/a", 
+      "publickey": "n/a", 
+      "peerid": "", 
+      "guid": "__global__"
     }
+  }, 
+  {
+    "pk": 1, 
+    "model": "manager.clientsetting", 
+    "fields": {
+      "client": 1, 
+      "name": "filespec", 
+      "value": ".+\\.txt$"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "manager.clientsetting", 
+    "fields": {
+      "client": 1, 
+      "name": "drives", 
+      "value": "c:/"
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "manager.clientsetting", 
+    "fields": {
+      "client": 1, 
+      "name": "block_sz", 
+      "value": "4096"
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "manager.clientsetting", 
+    "fields": {
+      "client": 1, 
+      "name": "dbpath", 
+      "value": "./db/"
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "manager.clientsetting", 
+    "fields": {
+      "client": 1, 
+      "name": "cloud_files", 
+      "value": "./cloud/"
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "manager.clientsetting", 
+    "fields": {
+      "client": 1, 
+      "name": "cloud_meta", 
+      "value": "./cloud/"
+    }
+  }, 
+  {
+    "pk": 7, 
+    "model": "manager.clientsetting", 
+    "fields": {
+      "client": 1, 
+      "name": "log_level", 
+      "value": "20"
+    }
+  }, 
+  {
+    "pk": 9, 
+    "model": "manager.clientsetting", 
+    "fields": {
+      "client": 1, 
+      "name": "log_path", 
+      "value": "./log/"
+    }
+  }
 ]
