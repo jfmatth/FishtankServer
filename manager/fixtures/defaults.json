@@ -1,5 +1,23 @@
 [
   {
+    "pk": 2,
+    "model": "auth.user",
+    "fields": {
+      "username": "TestCompany",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2012-01-13 21:48:09",
+      "groups": [],
+      "user_permissions": [],
+      "password": "sha1$41eb2$deebf951b67d38dd44b4d886780747a52c27b60f",
+      "email": "",
+      "date_joined": "2012-01-13 21:48:09"
+    }
+  },
+  {
     "pk": 1, 
     "model": "manager.managedclient", 
     "fields": {
@@ -83,6 +101,15 @@
       "client": 1, 
       "name": "log_path", 
       "value": "./log/"
+    }
+  }, 
+  {
+    "pk": 10, 
+    "model": "manager.clientsetting", 
+    "fields": {
+      "client": 1, 
+      "name": "temppath", 
+      "value": "c:/temp/"
     }
   }
 ]

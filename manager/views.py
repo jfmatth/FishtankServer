@@ -41,6 +41,8 @@ def handledbm(ekey, guid, dbmfile):
         newbackup.key = ekey
         newbackup.filename = dbmfile.name
         newbackup.client = client
+        newbackup.date = datetime.datetime.now()
+        
         newbackup.save()
     
         # now add all the files from the DB as files under this backup.
