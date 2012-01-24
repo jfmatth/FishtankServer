@@ -25,6 +25,7 @@ urlpatterns = patterns('dtracker.views',
 
 	#downloads 
 	(r'^download/(?P<torrent_hash>\w+)', 'downloadtorrent'),
+
 	
 	#torrent check
 	(r'^check/$',                      'checktorrent'),

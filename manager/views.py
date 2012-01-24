@@ -2,8 +2,9 @@ from django.http import HttpResponse, HttpResponseBadRequest
 
 from django import forms
 
-from manager.models import ManagedClient, ClientSetting, Backup, File
+from manager.models import ManagedClient, ClientSetting, Backup
 from django.contrib.auth.models import User
+from dtracker.models import Torrent, Torrentclient
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -175,4 +176,15 @@ def setting(request, guid, setting):
             return HttpResponse(thesetting.value)
         except:
             return HttpResponseBadRequest("Can't save value")
+
+# asking the server for what torrents there are to be backed up from the cloud.
+def getcloud(request):
+    if not request.GET.has_key("size"):
+        return HttpResponseBadRequest("no size sent")
         
+    if not request.GET.has_key("guid"):
+        return HttpResponseBadRequest("no GUID sent")
+    
+    # so find all torrents that are less in size than 'size' and return the first one to the client.
+    
+    return HttpResponse("size = %s, GUID = %s"  % (request.GET["size"], request.GET['guid']))
