@@ -56,28 +56,3 @@ class Torrent(models.Model):
 				self.name		  = info['name']
 		except:
 			raise
-
-class Torrentclient(models.Model):
-	torrents   = models.ManyToManyField(Torrent)
-	ip		   = models.IPAddressField()
-	port	   = models.IntegerField()
-	peer_id	   = models.CharField(max_length=20)
-	stopped	   = models.BooleanField(default = True)
-	uploaded   = models.IntegerField(blank=True, null=True)
-	downloaded = models.IntegerField(blank=True, null=True)
-	left	   = models.IntegerField(blank=True, null=True)
-	created	   = models.DateTimeField(blank=True, null=True)
-	updated	   = models.DateTimeField(blank=True, null=True)
-
-	def __unicode__(self):
-		return "IP:%s:%d  Stopped:%s up:%d dn:%d rem:%d" % (self.ip, self.port, self.stopped, self.uploaded, self.downloaded, self.left)
-
-	def addevent(self, values):
-		if values['event'] == 'stopped':
-			self.stopped = True
-		else:
-			self.stopped = False
-
-		self.uploaded	= values['uploaded']
-		self.downloaded = values['downloaded']
-		self.left		= values['remaining']

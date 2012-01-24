@@ -1,4 +1,5 @@
 from django.db import models
+from dtracker.models import Torrent
 
 import uuid
 import datetime
@@ -26,11 +27,31 @@ class ManagedClient(models.Model):
 
     guid = models.CharField(max_length=50, blank=True)
     peerid = models.CharField(max_length=50, blank=True)
-
+    
     privatekey = models.TextField()
     publickey = models.TextField()
 
     company = models.ForeignKey(User)
+    
+    # < moved over from Torrentclient>
+    torrents   = models.ManyToManyField(Torrent)
+    port = models.IntegerField(blank=True, null=True)
+    stopped       = models.BooleanField(default = True)
+    offered    = models.IntegerField(blank=True, null=True)
+    uploaded   = models.IntegerField(blank=True, null=True)
+    downloaded = models.IntegerField(blank=True, null=True)
+    left       = models.IntegerField(blank=True, null=True)
+
+    def addevent(self, values):
+        if values['event'] == 'stopped':
+            self.stopped = True
+        else:
+            self.stopped = False
+
+        self.uploaded    = values['uploaded']
+        self.downloaded = values['downloaded']
+        self.left        = values['remaining']
+    # </ moved over from Torrentclient>
 
     def save(self, *args, **kwargs):
         # if the guid and/or peerID are blank, make new ones
