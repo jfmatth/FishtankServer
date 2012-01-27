@@ -65,29 +65,42 @@ def announce(request):
 	except ObjectDoesNotExist:
 		return _fail("Torrent is not registered, please upload your torrent first at /upload")
 
-	# see if we have this client in the DB first.
 	try:
-		#if a user already eists, we're good.
-		# Client.ob`jects.get(peer_id=c['peer_id'])
-		TorrentClient = TheTorrent.managedclient_set.get(ip=c['guid'])
-		print "Found client "
-		TorrentClient.port = c['port']
-		TorrentClient.peer_id = c['peer_id']
+		TheClient = ManagedClient.objects.get(guid=c['guid'])
+		print "Found client"
 	except ObjectDoesNotExist:
-		#if the user doesn't exist, create one
-		print "Adding new client " 
-		#TorrentClient = TheTorrent.torrentclient_set.create(ip=c['addr'], port=c['port'], peer_id=c['peer_id'])
-		return _fail('Managed client does not exist.')
+		return _fail('%s<br />Client does not exist. ' % c['guid'])
 
-	TorrentClient.addevent(values=c)
-	TorrentClient.save()
+	TheTorrent.managedclient_set.add(TheClient)
+	TheTorrent.save()
+	
+	TheClient.addevent(values=c)
+	TheClient.save()
+
+#	# see if we have this client in the DB first.
+#	try:
+#		#if a user already eists, we're good.
+#		# Client.ob`jects.get(peer_id=c['peer_id'])
+#		TorrentClient = TheTorrent.managedclient_set.get(guid=c['guid'])
+#		print "Found client "
+#		TorrentClient.port = c['port']
+#		TorrentClient.peer_id = c['peer_id']
+#	except ObjectDoesNotExist:
+#		#if the user doesn't exist, create one
+#		print "Adding new client " 
+#		#TorrentClient = TheTorrent.torrentclient_set.create(ip=c['addr'], port=c['port'], peer_id=c['peer_id'])
+#		return _fail('%s<br />Managed client does not exist: ' % c['guid'])
+#
+#	TorrentClient.addevent(values=c)
+#	TorrentClient.save()
 
 	# Send back all clients that aren't us and are running (!stopped)
-	clients = [{'ip': i.ip, 'peer id': i.peer_id, 'port': i.port} for i in TheTorrent.torrentclient_set.filter(stopped=False).exclude(ip=c['addr'])]
+	clients = [{'ip': i.ipaddr, 'peer id': i.peerid, 'port': i.port} for i in TheTorrent.managedclient_set.filter(stopped=False).exclude(ipaddr=c['addr'])]
 
 	r = {'peers': clients, 'interval': 1800	}
 
 	try:
+	    #return HttpResponse(bencode(r))
 	    return HttpResponse(bencode(r))
 	except:
 		return _fail('Error encoding response.')
