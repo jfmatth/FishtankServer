@@ -51,6 +51,9 @@ class ManagedClient(models.Model):
         self.uploaded    = values['uploaded']
         self.downloaded = values['downloaded']
         self.left        = values['remaining']
+        self.ipaddr     = values['addr']
+        self.port       = values['port']
+        
     # </ moved over from Torrentclient>
 
     def save(self, *args, **kwargs):
