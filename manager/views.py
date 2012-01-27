@@ -4,13 +4,12 @@ from django import forms
 
 from manager.models import ManagedClient, ClientSetting, Backup
 from django.contrib.auth.models import User
-from dtracker.models import Torrent, Torrentclient
 
 from django.core.exceptions import ObjectDoesNotExist
 
 import json
 import anydbm
-import os
+import os   
 import datetime
 
 GLOBALKEY = "__global__"

@@ -45,7 +45,7 @@
     "model": "manager.clientsetting", 
     "fields": {
       "client": 1, 
-      "name": "drives", 
+      "name": "backupdrives", 
       "value": "c:/"
     }
   }, 
