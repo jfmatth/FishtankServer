@@ -12,8 +12,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.list_detail import object_list
 
 from dtracker.bencode import bencode
-from dtracker.models import Torrent, Torrentclient
+from dtracker.models import Torrent #, Torrentclient
 from dtracker.forms import TorrentUploadForm
+from manager.models import ManagedClient
 
 def main(request):
 	
@@ -41,12 +42,13 @@ def announce(request):
 		c['addr']    = request.GET.get('ip', None) or request.META['REMOTE_ADDR']
 		c['port']    = int(request.GET['port'])
 		c['peer_id'] = request.GET['peer_id']
+		c['guid'] = request.GET['guid']
 
 		# JFM, hack arond unicode issues with info_hash in django
 		hash = parse_qs(request.META['QUERY_STRING'])['info_hash'][0].encode('hex')
 
 	except KeyError:
-		return _fail("""One of the following is missing: IP, Port, Peer_ID or info_hash""")
+		return _fail("""One of the following is missing: IP, Port, Peer_ID, GUID, or info_hash""")
 
 	# These fields may or may not come across, we hope they all do.
 	c['event']      = request.GET.get('event',  'None') 
@@ -67,14 +69,15 @@ def announce(request):
 	try:
 		#if a user already eists, we're good.
 		# Client.ob`jects.get(peer_id=c['peer_id'])
-		TorrentClient = TheTorrent.torrentclient_set.get(ip=c['addr'])
+		TorrentClient = TheTorrent.managedclient_set.get(ip=c['guid'])
 		print "Found client "
 		TorrentClient.port = c['port']
 		TorrentClient.peer_id = c['peer_id']
 	except ObjectDoesNotExist:
 		#if the user doesn't exist, create one
 		print "Adding new client " 
-		TorrentClient = TheTorrent.torrentclient_set.create(ip=c['addr'], port=c['port'], peer_id=c['peer_id'])
+		#TorrentClient = TheTorrent.torrentclient_set.create(ip=c['addr'], port=c['port'], peer_id=c['peer_id'])
+		return _fail('Managed client does not exist.')
 
 	TorrentClient.addevent(values=c)
 	TorrentClient.save()

@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import *
-from dtracker.models import Torrent, Torrentclient
+from dtracker.models import Torrent
 from django.views.generic.list_detail import object_list
 
 # Databrowse suppot #

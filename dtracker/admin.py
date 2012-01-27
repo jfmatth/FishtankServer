@@ -3,14 +3,6 @@
 ###
 
 from django.contrib import admin
-from dtracker.models import Torrent, Torrentclient
-
-class TorrentClientInline(admin.StackedInline):
-	model = Torrentclient
-
-
-class TorrentAdmin(admin.ModelAdmin):
-	inlines = [TorrentClientInline]
+from dtracker.models import Torrent
 
 admin.site.register(Torrent)
-admin.site.register(Torrentclient)
