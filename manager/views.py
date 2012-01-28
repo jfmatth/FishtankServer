@@ -1,11 +1,13 @@
 from django.http import HttpResponse, HttpResponseBadRequest
 
-from django import forms
 
 from manager.models import ManagedClient, ClientSetting, Backup
-from django.contrib.auth.models import User
+from dtracker.models import Torrent
 
+from django import forms
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Count
 
 import json
 import anydbm
@@ -14,14 +16,24 @@ import datetime
 
 GLOBALKEY = "__global__"
 
-CLIENTEXE = "client.exe"
+CLIENTEXE = "download\\client.exe"
 
 DATETIMEFMT = "%m/%d/%Y %I:%M:%S %p"
+
+
+
 
 class dbmForm(forms.Form):
     eKey = forms.CharField(max_length=700)
     guid = forms.CharField(max_length=50)
     dFile = forms.FileField()
+
+
+
+def main(request):
+    return HttpResponse('<a href="/manager/download/">Download client</a>')
+
+
 
 
 def handledbm(ekey, guid, dbmfile):
@@ -63,8 +75,6 @@ def handledbm(ekey, guid, dbmfile):
     except ObjectDoesNotExist:
         return False
 
-def main(request):
-    return HttpResponse("Nothing yet")
 
 def download(request):
     response = HttpResponse(open(CLIENTEXE,"rb").read())
@@ -184,6 +194,10 @@ def getcloud(request):
     if not request.GET.has_key("guid"):
         return HttpResponseBadRequest("no GUID sent")
     
-    # so find all torrents that are less in size than 'size' and return the first one to the client.
+#    >>> Torrent.objects.exclude(managedclient__guid="5dc71a04-154c-4ed0-ad4d-376cd03
+#96731").annotate(tc=Count('managedclient')).filter(tc__lt=2)
     
-    return HttpResponse("size = %s, GUID = %s"  % (request.GET["size"], request.GET['guid']))
+    # so find all torrents that are less in size than 'size' and return the first one to the client.
+    tl = Torrent.objects.annotate(tc=Count("managedclient")).filter(tc__lt=2)
+    if len(tl)>0 :
+        return HttpResponse(tl[0].info_hash)

@@ -42,20 +42,6 @@ class ManagedClient(models.Model):
     downloaded = models.IntegerField(blank=True, null=True)
     left       = models.IntegerField(blank=True, null=True)
 
-    def addevent(self, values):
-        if values['event'] == 'stopped':
-            self.stopped = True
-        else:
-            self.stopped = False
-
-        self.uploaded    = values['uploaded']
-        self.downloaded = values['downloaded']
-        self.left        = values['remaining']
-        self.ipaddr     = values['addr']
-        self.port       = values['port']
-        
-    # </ moved over from Torrentclient>
-
     def save(self, *args, **kwargs):
         # if the guid and/or peerID are blank, make new ones
         if self.id == None:            
@@ -71,6 +57,9 @@ class ManagedClient(models.Model):
 
     def __unicode__(self):
         return self.hostname
+
+    def show_torrents(self):
+        return self.torrents.all()
     
     
 class ClientSetting(models.Model):

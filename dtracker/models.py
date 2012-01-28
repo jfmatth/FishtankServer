@@ -24,6 +24,12 @@ class Torrent(models.Model):
 	def __unicode__(self):
 		return self.name
 	
+	def show_clients(self):
+		s = ""
+		for mc in self.managedclient_set.all():
+			s += mc
+		return s
+	
 	# need to modify the save() routine to update the various fields, once the file is uploaded.
 	def save(self):
 		print "saving"

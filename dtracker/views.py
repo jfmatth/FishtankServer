@@ -16,14 +16,24 @@ from dtracker.models import Torrent #, Torrentclient
 from dtracker.forms import TorrentUploadForm
 from manager.models import ManagedClient
 
-def main(request):
-	
-	list = Torrent.objects.all()
-	
-	response = object_list(request, list)
-	return response
-	
+
+
 def announce(request):
+	def addevent(record, values):
+		if values['event'] == 'stopped':
+			record.stopped = True
+		else:
+			record.stopped = False
+
+		record.uploaded	= values['uploaded']
+		record.downloaded = values['downloaded']
+		record.left		= values['remaining']
+		record.ipaddr	 = values['addr']
+		record.port	   = values['port']
+		
+		record.save()
+		
+	
 	def _fail(reason):
 		""" Helper function: creates an HTTP response for when errors occur in a way
 			bittorrent clients can read.
@@ -42,7 +52,7 @@ def announce(request):
 		c['addr']    = request.GET.get('ip', None) or request.META['REMOTE_ADDR']
 		c['port']    = int(request.GET['port'])
 		c['peer_id'] = request.GET['peer_id']
-		c['guid'] = request.GET['guid']
+#		c['guid'] = request.GET['guid']
 
 		# JFM, hack arond unicode issues with info_hash in django
 		hash = parse_qs(request.META['QUERY_STRING'])['info_hash'][0].encode('hex')
@@ -60,22 +70,23 @@ def announce(request):
 	c['numwant']    = request.GET.get('numwant',0)
 	c['key']        = request.GET.get('key','none')
 
-	try:	
+	try:
 		TheTorrent = Torrent.objects.get(info_hash=hash)
 	except ObjectDoesNotExist:
 		return _fail("Torrent is not registered, please upload your torrent first at /upload")
 
 	try:
-		TheClient = ManagedClient.objects.get(guid=c['guid'])
+#		TheClient = ManagedClient.objects.get(guid=c['guid'])
+		TheClient = ManagedClient.objects.get(ipaddr=c['addr'])
 		print "Found client"
 	except ObjectDoesNotExist:
-		return _fail('%s<br />Client does not exist. ' % c['guid'])
+		return _fail('%s Client does not exist. ' % c['addr'])
 
 	TheTorrent.managedclient_set.add(TheClient)
 	TheTorrent.save()
 	
-	TheClient.addevent(values=c)
-	TheClient.save()
+	addevent(record=TheClient, values=c)
+#	TheClient.save()
 
 #	# see if we have this client in the DB first.
 #	try:
@@ -100,8 +111,9 @@ def announce(request):
 	r = {'peers': clients, 'interval': 1800	}
 
 	try:
-	    #return HttpResponse(bencode(r))
-	    return HttpResponse(bencode(r))
+		#return HttpResponse(bencode(r))
+		print "returning %s" % bencode(r)
+		return HttpResponse(bencode(r))
 	except:
 		return _fail('Error encoding response.')
 

@@ -111,5 +111,23 @@
       "name": "temppath", 
       "value": "c:/temp/"
     }
+  }, 
+  {
+    "pk": 11, 
+    "model": "manager.clientsetting", 
+    "fields": {
+      "client": 1, 
+      "name": "max_free_perc", 
+      "value": "90"
+    }
+  }, 
+  {
+    "pk": 12, 
+    "model": "manager.clientsetting", 
+    "fields": {
+      "client": 1, 
+      "name": "min_free_gb", 
+      "value": "2"
+    }
   }
 ]
