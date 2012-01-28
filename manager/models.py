@@ -35,8 +35,8 @@ class ManagedClient(models.Model):
     
     # < moved over from Torrentclient>
     torrents   = models.ManyToManyField(Torrent)
-    port = models.IntegerField(blank=True, null=True)
-    stopped       = models.BooleanField(default = True)
+    port       = models.IntegerField(blank=True, null=True)
+    stopped    = models.BooleanField(default = True)
     offered    = models.IntegerField(blank=True, null=True)
     uploaded   = models.IntegerField(blank=True, null=True)
     downloaded = models.IntegerField(blank=True, null=True)
@@ -58,8 +58,8 @@ class ManagedClient(models.Model):
     def __unicode__(self):
         return self.hostname
 
-    def show_torrents(self):
-        return self.torrents.all()
+    def torrent_count(self):
+        return self.torrents.all().count()
     
     
 class ClientSetting(models.Model):

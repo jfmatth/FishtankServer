@@ -39,9 +39,6 @@ def announce(request):
 			bittorrent clients can read.
 		"""
 
-		print
-		print "Failure " + reason
-		print
 		return HttpResponse(bencode({'failure reason': reason}))
 
 	# put all the request information into the c dict.
@@ -78,7 +75,6 @@ def announce(request):
 	try:
 #		TheClient = ManagedClient.objects.get(guid=c['guid'])
 		TheClient = ManagedClient.objects.get(ipaddr=c['addr'])
-		print "Found client"
 	except ObjectDoesNotExist:
 		return _fail('%s Client does not exist. ' % c['addr'])
 
@@ -112,7 +108,6 @@ def announce(request):
 
 	try:
 		#return HttpResponse(bencode(r))
-		print "returning %s" % bencode(r)
 		return HttpResponse(bencode(r))
 	except:
 		return _fail('Error encoding response.')
@@ -120,7 +115,6 @@ def announce(request):
 def uploadtorrent(request):
 
 	if request.method == 'POST':
-		print request.POST, "and", request.FILES
 		form = TorrentUploadForm(request.POST, request.FILES)
 		if form.is_valid():
 			t = form.save()

@@ -7,7 +7,7 @@ from dtracker.models import Torrent
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Count
+from django.db.models import Count, Q
 
 import json
 import anydbm
@@ -193,13 +193,12 @@ def getcloud(request):
         
     if not request.GET.has_key("guid"):
         return HttpResponseBadRequest("no GUID sent")
+        
+    qTorrentExclude = Q(managedclient__guid=request.GET['guid'])
+    qTorrentFilter = Q(managedclient__stopped=False,size__lt = int(request.GET['size']) )
     
-#    >>> Torrent.objects.exclude(managedclient__guid="5dc71a04-154c-4ed0-ad4d-376cd03
-#96731").annotate(tc=Count('managedclient')).filter(tc__lt=2)
-    
-    # so find all torrents that are less in size than 'size' and return the first one to the client.
-#    tl = Torrent.objects.annotate(tc=Count("managedclient")).filter(tc__lt=2)
-    tl = Torrent.objects.exclude(managedclient__guid=request.GET['guid']).annotate(tc=Count('managedclient')).filter(tc__lt=2)
+#    Only return torrents which this client isn't already hosting, or are stopped, and have less than 2 hosts.
+    tl = Torrent.objects.filter(qTorrentFilter).exclude(qTorrentExclude).annotate(tc=Count('managedclient')).filter(tc__lt=2)
     
     if len(tl)>0 :
         return HttpResponse(tl[0].info_hash)
