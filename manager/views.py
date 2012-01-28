@@ -198,6 +198,10 @@ def getcloud(request):
 #96731").annotate(tc=Count('managedclient')).filter(tc__lt=2)
     
     # so find all torrents that are less in size than 'size' and return the first one to the client.
-    tl = Torrent.objects.annotate(tc=Count("managedclient")).filter(tc__lt=2)
+#    tl = Torrent.objects.annotate(tc=Count("managedclient")).filter(tc__lt=2)
+    tl = Torrent.objects.exclude(managedclient__guid=request.GET['guid']).annotate(tc=Count('managedclient')).filter(tc__lt=2)
+    
     if len(tl)>0 :
         return HttpResponse(tl[0].info_hash)
+    else:
+        return HttpResponse("")
