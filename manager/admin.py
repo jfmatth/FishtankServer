@@ -2,9 +2,13 @@ from django.contrib import admin
 from manager.models import ClientSetting, ManagedClient, Backup, File
 
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ('hostname', 'stopped', 'torrent_count')
+    list_display = ('hostname', 'ipaddr', 'stopped', 'torrent_count')
+admin.site.register(ManagedClient, ClientAdmin)
 
 admin.site.register(ClientSetting)
-admin.site.register(ManagedClient, ClientAdmin)
-admin.site.register(Backup)
+
+class BackupAdmin(admin.ModelAdmin):
+    list_display = ('date', 'client', 'fileuuid', '_filecount')
+    
+admin.site.register(Backup, BackupAdmin)
 admin.site.register(File)       

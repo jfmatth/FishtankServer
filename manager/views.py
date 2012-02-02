@@ -25,7 +25,8 @@ DATETIMEFMT = "%m/%d/%Y %I:%M:%S %p"
 
 class dbmForm(forms.Form):
     eKey = forms.CharField(max_length=700)
-    guid = forms.CharField(max_length=50)
+    clientguid = forms.CharField(max_length=50)
+    backupguid = forms.CharField(max_length=50)
     dFile = forms.FileField()
 
 
@@ -36,12 +37,17 @@ def main(request):
 
 
 
-def handledbm(ekey, guid, dbmfile):
+def handledbm(rPOST, rFILES):
+    
+    clientguid = rPOST['clientguid']
+    ekey = rPOST['eKey'] 
     
     # first, find the client this data belongs to
     try:
-        client = ManagedClient.objects.get(guid=guid)
-    
+        client = ManagedClient.objects.get(guid=clientguid)
+
+        dbmfile = rFILES['dFile']
+        ekey
         # save the file somewhere first
         destination = open('temp.dbm', 'wb+')
         for chunk in dbmfile.chunks():
@@ -50,8 +56,8 @@ def handledbm(ekey, guid, dbmfile):
         
         # add a record of this file in the DB
         newbackup = Backup()
-        newbackup.key = ekey
-        newbackup.filename = dbmfile.name
+        newbackup.encryptkey = ekey
+        newbackup.fileuuid = dbmfile.name.split(".")[0]  
         newbackup.client = client
         newbackup.date = datetime.datetime.now()
         
@@ -86,7 +92,7 @@ def dbmupload(request):
     if request.method == 'POST':
         form = dbmForm(request.POST, request.FILES)
         if form.is_valid():
-            if handledbm(request.POST['eKey'],request.POST['guid'], request.FILES['dFile']):
+            if handledbm(request.POST,request.FILES):
                 return HttpResponse("valid")
             else:
                 return HttpResponse("Unable to injest")
