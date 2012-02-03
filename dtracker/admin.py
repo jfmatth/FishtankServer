@@ -7,6 +7,6 @@ from django.contrib import admin
 from dtracker.models import Torrent
 
 class TorrentAdmin(admin.ModelAdmin):
-    list_display = ('name', 'info_hash', 'size')
+    pass
     
 admin.site.register(Torrent, TorrentAdmin)

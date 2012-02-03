@@ -2,7 +2,6 @@ from django.db import models
 from dtracker.models import Torrent
 
 import uuid
-import datetime
 
 #public key support
 from Crypto.PublicKey import RSA
@@ -34,7 +33,8 @@ class ManagedClient(models.Model):
     company = models.ForeignKey(User)
     
     # < moved over from Torrentclient>
-    torrents   = models.ManyToManyField(Torrent)
+    torrents   = models.ManyToManyField(Torrent, blank=True)
+    
     port       = models.IntegerField(blank=True, null=True)
     stopped    = models.BooleanField(default = True)
     offered    = models.IntegerField(blank=True, null=True)
@@ -72,14 +72,17 @@ class ClientSetting(models.Model):
         return "%s, %s = %s" %(self.client,self.name,self.value)
 
 class Backup(models.Model):
-    key = models.TextField()   # encrypted key of the zip file.
-    filename = models.CharField(max_length=100)  # name of the .zip file in the cloud.
-    date = models.DateTimeField(default=datetime.datetime.now() )
+    encryptkey = models.TextField()   # encrypted key of the zip file.
+    fileuuid = models.CharField(max_length=50)
+    date = models.DateTimeField( )
     
     client = models.ForeignKey(ManagedClient)
     
     def __unicode__(self):
         return "%s %s" % (self.client,self.date)
+    
+    def _filecount(self):
+        return len(self.file_set.all() )
     
 class File(models.Model):
     filename = models.CharField(max_length=100)
