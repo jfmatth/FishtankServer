@@ -125,6 +125,7 @@ def register(request):
     except ObjectDoesNotExist:
         mc = user.managedclient_set.create(hostname=request.POST['hostname'],
                                            macaddr = request.POST['macaddr'],
+                                           ipaddr = request.POST['ipaddr']
                                            )
 
     # we are going to return a JSON object now :)
@@ -135,14 +136,15 @@ def register(request):
 def setting(request, guid, setting):
     # allows for reading and writing 
     if request.method == 'GET':
-        # requesting a setting
-        
+        # check to make sure this is a valid client
+        try:
+            client = ManagedClient.objects.get(guid__exact=guid)
+        except ObjectDoesNotExist:
+            return HttpResponseBadRequest("not registered")
+
         # check to see if we are asking for a client field value with # in the name?
         if setting[0] == "_":
             try:
-                client = ManagedClient.objects.get(guid__exact=guid)
-                
-                # go through all the client's fields, and see if we find a match
                 fieldname = setting[1:]
                 return HttpResponse( getattr(client,fieldname) )
             except:
@@ -161,36 +163,36 @@ def setting(request, guid, setting):
                 except:
                     return HttpResponseBadRequest("Key Not found")
         
-    if request.method == 'POST':
-        if guid == GLOBALKEY:
-            return HttpResponseBadRequest("Can't update %s values" % GLOBALKEY)
-        
-        # they want to save a value
-        if "value" not in request.POST:
-            return HttpResponseBadRequest("No value parameter specified")
-        
-        try:
-            # see if setting already exists, if so, get the record and we'll update that.
-            thesetting = ClientSetting.objects.get(client__guid__exact=guid, 
-                                                   name__exact=setting)            
-        except ObjectDoesNotExist:
-            # find the client first
-            try:
-                theclient = ManagedClient.objects.get(guid__exact=guid)
-            except:
-                return HttpResponseBadRequest("client key not found")
-            
-            # now setup a new client setting value.
-            thesetting = ClientSetting(client=theclient)
-            thesetting.name = setting
-        
-        # update / save our setting
-        try:
-            thesetting.value = request.POST['value']
-            thesetting.save()
-            return HttpResponse(thesetting.value)
-        except:
-            return HttpResponseBadRequest("Can't save value")
+#    if request.method == 'POST':
+#        if guid == GLOBALKEY:
+#            return HttpResponseBadRequest("Can't update %s values" % GLOBALKEY)
+#        
+#        # they want to save a value
+#        if "value" not in request.POST:
+#            return HttpResponseBadRequest("No value parameter specified")
+#        
+#        try:
+#            # see if setting already exists, if so, get the record and we'll update that.
+#            thesetting = ClientSetting.objects.get(client__guid__exact=guid, 
+#                                                   name__exact=setting)            
+#        except ObjectDoesNotExist:
+#            # find the client first
+#            try:
+#                theclient = ManagedClient.objects.get(guid__exact=guid)
+#            except:
+#                return HttpResponseBadRequest("client key not found")
+#            
+#            # now setup a new client setting value.
+#            thesetting = ClientSetting(client=theclient)
+#            thesetting.name = setting
+#        
+#        # update / save our setting
+#        try:
+#            thesetting.value = request.POST['value']
+#            thesetting.save()
+#            return HttpResponse(thesetting.value)
+#        except:
+#            return HttpResponseBadRequest("Can't save value")
 
 # asking the server for what torrents there are to be backed up from the cloud.
 def getcloud(request):

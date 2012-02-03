@@ -2,7 +2,6 @@ from django.db import models
 from dtracker.models import Torrent
 
 import uuid
-import datetime
 
 #public key support
 from Crypto.PublicKey import RSA
@@ -34,7 +33,8 @@ class ManagedClient(models.Model):
     company = models.ForeignKey(User)
     
     # < moved over from Torrentclient>
-    torrents   = models.ManyToManyField(Torrent)
+    torrents   = models.ManyToManyField(Torrent, blank=True)
+    
     port       = models.IntegerField(blank=True, null=True)
     stopped    = models.BooleanField(default = True)
     offered    = models.IntegerField(blank=True, null=True)
