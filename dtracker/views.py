@@ -140,14 +140,42 @@ def downloadtorrent(request, torrent_hash):
 	# 	response['Content-Disposition'] = 'attachment; filename=' + t.file_path.path
 	# return response
 
-def checktorrent(request):
+def checktorrent(request):	
+	"""
+	Check for either an info hash or a uuid, depending on what's
+	passed in the query string.  Ghetto, but let's just get it
+	working for now.
+	"""
 	if request.GET.has_key('info_hash'):
 		try:
-			hash = request.GET['info_hash']
-			t = Torrent.objects.get(info_hash=hash)
-			return HttpResponse('Found %s' % hash)
+			key = request.GET['info_hash']
+			Torrent.objects.get(info_hash=key)
+			return HttpResponse('Found hash %s' % key)
 		except ObjectDoesNotExist:
-			return HttpResponse('Torrent %s not found ' % hash)
+			return HttpResponse('Torrent %s not found ' % key)
+	elif request.GET.has_key('uuid'):
+		try:
+			key = request.GET['uuid']
+			Torrent.objects.get(uuid=key)
+			return HttpResponse('Found uuid %s' % key)
+		except ObjectDoesNotExist:
+			return HttpResponse('Torrent %s not found ' % key)
 	else:
-		return HttpResponse('ERROR: you must pass a HASH parameter')
-
+		return HttpResponse('ERROR: you must pass an info_hash or uuid parameter.')
+	
+def stop_client(request):
+	"""
+	stop the cloud!  When this request comes in, set the corresponding client
+	to stopped.
+	"""
+	if request.GET.has_key('guid'):
+		try:
+			guid = request.GET['guid']
+			mc = ManagedClient.objects.get(guid=guid)
+			mc.stopped = True
+			mc.save()
+			return HttpResponse('client %s stopped' % guid)
+		except ObjectDoesNotExist:
+			return HttpResponse("client %s not found" % guid)
+	else:
+		return HttpResponse('ERROR: you must a client guid.')

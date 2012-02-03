@@ -6,5 +6,5 @@ from dtracker.models import Torrent
 class TorrentUploadForm(ModelForm):
 	class Meta:
 		model = Torrent
-		fields = ('file_path',)
+		fields = ('file_path', 'uuid', )
 

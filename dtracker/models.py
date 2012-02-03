@@ -13,6 +13,7 @@ class Torrent(models.Model):
 	name	  = models.CharField(max_length=200, blank=True)
 	file_path = models.FileField("File location", upload_to='torrents', blank=True)
 	info_hash = models.CharField("Info Hash", max_length=40, blank=True)
+	uuid 	  = models.CharField("UUID", max_length=50, blank=True)
 	size	  = models.IntegerField(blank=True, null=True)
 	announce  = models.CharField("HTTP announce",max_length=100, blank=True)
 	piece_length = models.IntegerField(blank=True, null=True)
