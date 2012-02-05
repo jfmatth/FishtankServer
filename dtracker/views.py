@@ -12,9 +12,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.list_detail import object_list
 
 from dtracker.bencode import bencode
-from dtracker.models import Torrent #, Torrentclient
+from dtracker.models import Torrent
 from dtracker.forms import TorrentUploadForm
-from manager.models import ManagedClient
+from manager.models import ManagedClient, Backup
 
 
 
@@ -156,26 +156,37 @@ def checktorrent(request):
 	elif request.GET.has_key('uuid'):
 		try:
 			key = request.GET['uuid']
-			Torrent.objects.get(uuid=key)
+			Backup.objects.get(fileuuid=key)
 			return HttpResponse('Found uuid %s' % key)
 		except ObjectDoesNotExist:
-			return HttpResponse('Torrent %s not found ' % key)
+			return HttpResponse('Backup %s not found ' % key)
 	else:
 		return HttpResponse('ERROR: you must pass an info_hash or uuid parameter.')
 	
-def stop_client(request):
+def clientstatus(request):
 	"""
 	stop the cloud!  When this request comes in, set the corresponding client
 	to stopped.
 	"""
-	if request.GET.has_key('guid'):
+	if request.GET.has_key('guid') and request.GET.has_key('status'):
 		try:
 			guid = request.GET['guid']
+			status = request.GET['status']
+			
 			mc = ManagedClient.objects.get(guid=guid)
-			mc.stopped = True
+			
+			if status != "start":
+				mc.stopped = True
+			else:
+				mc.stopped = False
+				
 			mc.save()
-			return HttpResponse('client %s stopped' % guid)
+			
+			if mc.stopped:
+				return HttpResponse('client %s stopped' % guid)
+			else:
+				return HttpResponse('client %s started' % guid)
 		except ObjectDoesNotExist:
 			return HttpResponse("client %s not found" % guid)
 	else:
-		return HttpResponse('ERROR: you must a client guid.')
+		return HttpResponse('ERROR: you must give a client guid and status.')

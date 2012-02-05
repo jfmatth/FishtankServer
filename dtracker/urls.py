@@ -31,7 +31,7 @@ urlpatterns = patterns('dtracker.views',
 	(r'^check/$',                      'checktorrent'),
 	
 	#stop client
-	(r'^stop/$',                      'stop_client'),
+	(r'^status/$',                      'clientstatus'),
 	
 	(r'torrents/$', list_detail.object_list, info_dict)
 	
