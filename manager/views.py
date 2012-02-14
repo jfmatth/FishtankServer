@@ -195,7 +195,7 @@ def setting(request, guid, setting):
 #            return HttpResponseBadRequest("Can't save value")
 
 # asking the server for what torrents there are to be backed up from the cloud.
-def getcloud(request):
+def getcloud(request):  
     if not request.GET.has_key("size"):
         return HttpResponseBadRequest("no size sent")
         
@@ -204,9 +204,10 @@ def getcloud(request):
         
     qTorrentExclude = Q(managedclient__guid=request.GET['guid'])
     qTorrentFilter = Q(managedclient__stopped=False,size__lt = int(request.GET['size']) )
-    
+        
 #    Only return torrents which this client isn't already hosting, or are stopped, and have less than 2 hosts.
-    tl = Torrent.objects.filter(qTorrentFilter).exclude(qTorrentExclude).annotate(tc=Count('managedclient')).filter(tc__lt=2)
+    tl = Torrent.objects.filter(managedclient__stopped=False,size__lt=int(request.GET['size'])).exclude(managedclient__guid=request.GET['guid']).annotate(tc=Count('managedclient')).filter(tc__lt=3)
+#    tl = Torrent.objects.exclude(qTorrentExclude).annotate(tc=Count('managedclient')).filter(tc__lt=3)
     
     if len(tl)>0 :
         return HttpResponse(tl[0].info_hash)
