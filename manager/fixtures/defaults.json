@@ -129,5 +129,14 @@
       "name": "min_free_gb", 
       "value": "2"
     }
+  }, 
+  {
+    "pk": 13, 
+    "model": "manager.clientsetting", 
+    "fields": {
+      "client": 1, 
+      "name": "backupsize", 
+      "value": "1000"
+    }
   }
 ]

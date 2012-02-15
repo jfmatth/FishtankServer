@@ -96,4 +96,4 @@ class File(models.Model):
     backup = models.ForeignKey(Backup)
     
     def __unicode__(self):
-        return "%s\\%s" % (self.fullpath,self.filename)
+        return "%s" % self.fullpath

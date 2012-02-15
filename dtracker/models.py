@@ -36,16 +36,12 @@ class Torrent(models.Model):
 	
 	# need to modify the save() routine to update the various fields, once the file is uploaded.
 	def save(self):
-		print "saving"
-
 		if self.id == None:
-			print "self id is none"
 			# only calculate for new records.
 			super(Torrent, self).save()
 			
 			self.fillin_torrent_fields()
 
-		print "saving2"
 		super(Torrent,self).save()
 
 	# pretty kludgy but it works?
