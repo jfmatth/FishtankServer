@@ -56,7 +56,7 @@ class ManagedClient(models.Model):
         super(ManagedClient, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        return self.hostname
+        return "%s.%s" % (self.company, self.hostname)
 
     def torrent_count(self):
         return self.torrents.all().count()
