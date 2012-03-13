@@ -1,5 +1,5 @@
 from django.contrib import admin
-from manager.models import ClientSetting, ManagedClient, Backup, File
+from manager.models import ClientSetting, ManagedClient, Backup, File, Verification
 
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('hostname', 'ipaddr', 'stopped', 'torrent_count')
@@ -24,4 +24,5 @@ class BackupAdmin(admin.ModelAdmin):
     
     
 admin.site.register(Backup, BackupAdmin)
-admin.site.register(File)       
+admin.site.register(File)
+admin.site.register(Verification)

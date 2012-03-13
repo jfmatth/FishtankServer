@@ -1,7 +1,8 @@
+import user
 from django.http import HttpResponse, HttpResponseBadRequest
 
 
-from manager.models import ManagedClient, ClientSetting, Backup
+from manager.models import ManagedClient, ClientSetting, Backup, Verification
 from dtracker.models import Torrent
 
 from django import forms
@@ -19,9 +20,6 @@ GLOBALKEY = "__global__"
 CLIENTEXE = "download\\client.exe"
 
 DATETIMEFMT = "%m/%d/%Y %I:%M:%S %p"
-
-
-
 
 class dbmForm(forms.Form):
     eKey = forms.CharField(max_length=700)
@@ -105,16 +103,48 @@ def dbmupload(request):
 def register(request):
 
     returnstr = ""
-    
-    # validate the user ID and password
+
+    missinginfo = False
+
+    # validate all our settings
+    if not "verifykey" in request.POST:
+        missinginfo = True
+    if not "hostname" in request.POST:
+        missinginfo = True
+    if not "macaddr" in request.POST:
+        missinginfo = True
+    if not "ipaddr" in request.POST:
+        missinginfo = True
+
+    if missinginfo:
+        return HttpResponseBadRequest("Unable to register")
+
+# JFM, change way we register, not with ID / Password anymore, use the verification table.
+#    # validate the user ID and password
+#    try:
+#        user = User.objects.get(pk=request.POST['userid'])
+#
+#        if not user.check_password(request.POST['password']):
+#            return HttpResponseBadRequest("Unable to login")
+#
+#    except ObjectDoesNotExist:
+#        return HttpResponseBadRequest("Unable to login")
+
+    # try to find the verifykey and see if it's OK.
     try:
-        user = User.objects.get(pk=request.POST['userid'])
-        
-        if not user.check_password(request.POST['password']):
-            return HttpResponseBadRequest("Unable to login")
-        
+        k = Verification.objects.get(verifykey = request.POST['verifykey'])
+        # key was found, make sure it's not expired
+
+        if datetime.date.today() > k.goodtill:
+            return HttpResponseBadRequest("Unable to register, key expired")
+
+        # key is found and not expired, bonus!
+
+        # set the user record
+        user = k.company
+
     except ObjectDoesNotExist:
-        return HttpResponseBadRequest("Unable to login")
+        return HttpResponseBadRequest("Unable to register, unknown key")
 
     # try to find this client on the list of managed clients.
     # user should have our user object, we need to see if our hostname + macaddr combo is here or not, if
@@ -128,9 +158,14 @@ def register(request):
                                            ipaddr = request.POST['ipaddr']
                                            )
 
+    k.usekey()
+
     # we are going to return a JSON object now :)
-    body = json.dumps({'guid':mc.guid, 'publickey':mc.publickey, 'returnstr':returnstr} )
-    
+    body = json.dumps( {'guid':mc.guid,
+                        'publickey':mc.publickey,
+                        'privatekey':mc.privatekey,
+                        'returnstr':returnstr} )
+
     return HttpResponse(body)
     
 def setting(request, guid, setting):
@@ -172,14 +207,20 @@ def getcloud(request):
     if not request.GET.has_key("guid"):
         return HttpResponseBadRequest("no GUID sent")
         
-    qTorrentExclude = Q(managedclient__guid=request.GET['guid'])
-    qTorrentFilter = Q(managedclient__stopped=False,size__lt = int(request.GET['size']) )
+#    qTorrentExclude = Q(managedclient__guid=request.GET['guid'])
+#    qTorrentFilter = Q(managedclient__stopped=False,size__lt = int(request.GET['size']) )
         
     # find the user / company that's requesting, so we only offer torrents of that company
     company = ManagedClient.objects.get(guid=request.GET["guid"]).company
 
-#    Only return torrents which this client isn't already hosting, or are stopped, and have less than 2 hosts.
-    tl = Torrent.objects.filter(managedclient__company=company, managedclient__stopped=False,size__lt=int(request.GET['size'])).exclude(managedclient__guid=request.GET['guid']).annotate(tc=Count('managedclient')).filter(tc__lt=3)
+#    Only return torrents which this client isn't already hosting and other filters / exclusions.
+    tl = Torrent.objects.filter(managedclient__company=company,
+                                managedclient__stopped=False,
+                                size__lt=int(request.GET['size']),
+                                managedclient__verified=True,
+                                )\
+                        .exclude(managedclient__guid=request.GET['guid'])\
+                        .annotate(tc=Count('managedclient')).filter(tc__lt=3)
 #    tl = Torrent.objects.exclude(qTorrentExclude).annotate(tc=Count('managedclient')).filter(tc__lt=3)
 
     if len(tl)>0 :
