@@ -50,7 +50,7 @@ class Verification(models.Model):
         self.save()
 
     def __unicode__(self):
-        return "%s - %s" % (self.company, self.verifykey)
+        return "%s - %s - %s" % (self.company, self.verifykey, self.goodtill)
 
 
 class ManagedClient(models.Model):

@@ -1,7 +1,6 @@
 import user
 from django.http import HttpResponse, HttpResponseBadRequest
 
-
 from manager.models import ManagedClient, ClientSetting, Backup, Verification
 from dtracker.models import Torrent
 
@@ -27,13 +26,8 @@ class dbmForm(forms.Form):
     backupguid = forms.CharField(max_length=50)
     dFile = forms.FileField()
 
-
-
 def main(request):
     return HttpResponse('<a href="/manager/download/">Download client</a>')
-
-
-
 
 def handledbm(rPOST, rFILES):
     
@@ -152,6 +146,9 @@ def register(request):
     try:
         mc = user.managedclient_set.get(hostname__exact = request.POST['hostname'],
                                         macaddr__exact  = request.POST['macaddr'] )
+        mc.ipaddr = request.POST['ipaddr']
+        mc.save()
+        
     except ObjectDoesNotExist:
         mc = user.managedclient_set.create(hostname=request.POST['hostname'],
                                            macaddr = request.POST['macaddr'],
