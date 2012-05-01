@@ -116,8 +116,23 @@ def uploadtorrent(request):
 
 	if request.method == 'POST':
 		form = TorrentUploadForm(request.POST, request.FILES)
+		print "your uuid", request.POST['uuid']
+		
+		# tied our torrent to an existing backup, or exit
+		try:
+			uuid = request.POST['uuid']
+		except KeyError:
+			return HttpBadResponse('UUID not present.')
+	
+		try:
+			backup = Backup.objects.get(fileuuid=uuid)
+		except DoesNotExist:
+			return HttpBadResponse('Backup does not exist.')
+		
 		if form.is_valid():
 			t = form.save()
+			backup.torrent = t
+			backup.save()
 			return HttpResponseRedirect('/backup/uploadsuccess/?id=%d' % t.id)
 	else:
 		form = TorrentUploadForm()

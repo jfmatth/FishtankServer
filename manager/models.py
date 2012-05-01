@@ -111,6 +111,7 @@ class Backup(models.Model):
     encryptkey = models.TextField()   # encrypted key of the zip file.
     fileuuid = models.CharField(max_length=50)
     date = models.DateTimeField( )
+    torrent = models.OneToOneField(Torrent, null=True)
     
     client = models.ForeignKey(ManagedClient)
     
