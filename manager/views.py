@@ -144,8 +144,10 @@ def register(request):
     # user should have our user object, we need to see if our hostname + macaddr combo is here or not, if
     # not, add it and generate a GUID and PEERID setting.
     try:
-        mc = user.managedclient_set.get(hostname__exact = request.POST['hostname'],
-                                        macaddr__exact  = request.POST['macaddr'] )
+        #mc = user.managedclient_set.get(hostname__exact = request.POST['hostname'],
+        #                                macaddr__exact  = request.POST['macaddr'] )
+        mc = user.managedclient_set.get(hostname__exact = request.POST['hostname'] )
+        
         mc.ipaddr = request.POST['ipaddr']
         mc.save()
         
