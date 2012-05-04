@@ -4,7 +4,7 @@
 # 7/2008 - Created
 
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from cgi import parse_qs
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
@@ -116,18 +116,17 @@ def uploadtorrent(request):
 
 	if request.method == 'POST':
 		form = TorrentUploadForm(request.POST, request.FILES)
-		print "your uuid", request.POST['uuid']
 		
 		# tied our torrent to an existing backup, or exit
 		try:
 			uuid = request.POST['uuid']
 		except KeyError:
-			return HttpBadResponse('UUID not present.')
+			return HttpResponseBadRequest('UUID not present.')
 	
 		try:
 			backup = Backup.objects.get(fileuuid=uuid)
-		except DoesNotExist:
-			return HttpBadResponse('Backup does not exist.')
+		except ObjectDoesNotExist:
+			return HttpResponseBadRequest('Backup does not exist.')
 		
 		if form.is_valid():
 			t = form.save()

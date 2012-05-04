@@ -30,6 +30,9 @@ def main(request):
     return HttpResponse('<a href="/manager/download/">Download client</a>')
 
 def handledbm(rPOST, rFILES):
+
+#    uploaddbm = 'injest/temp.dbm'    
+    uploaddbm = 'injest/' + rPOST['backupguid']
     
     clientguid = rPOST['clientguid']
     ekey = rPOST['eKey'] 
@@ -41,7 +44,7 @@ def handledbm(rPOST, rFILES):
         dbmfile = rFILES['dFile']
         ekey
         # save the file somewhere first
-        destination = open('temp.dbm', 'wb+')
+        destination = open(uploaddbm, 'wb+')
         for chunk in dbmfile.chunks():
             destination.write(chunk)
         destination.close()
@@ -52,11 +55,11 @@ def handledbm(rPOST, rFILES):
         newbackup.fileuuid = dbmfile.name.split(".")[0]  
         newbackup.client = client
         newbackup.date = datetime.datetime.now()
-        
+
         newbackup.save()
-    
+
         # now add all the files from the DB as files under this backup.
-        db = anydbm.open('temp.dbm', 'r')
+        db = anydbm.open(uploaddbm, 'r')
         for key in db:
             d = json.loads(db[key])
             newbackup.file_set.create(
@@ -68,7 +71,10 @@ def handledbm(rPOST, rFILES):
                 accdate = datetime.datetime.strptime(d['accessed'],DATETIMEFMT),
                 createdate = datetime.datetime.strptime(d['created'],DATETIMEFMT)
             )
-            
+
+        db.close()
+        os.remove(uploaddbm)
+
         return True
     except ObjectDoesNotExist:
         return False
@@ -129,8 +135,8 @@ def register(request):
         k = Verification.objects.get(verifykey = request.POST['verifykey'])
         # key was found, make sure it's not expired
 
-        if datetime.date.today() > k.goodtill:
-            return HttpResponseBadRequest("Unable to register, key expired")
+#        if datetime.date.today() > k.goodtill:
+#            return HttpResponseBadRequest("Unable to register, key expired")
 
         # key is found and not expired, bonus!
 

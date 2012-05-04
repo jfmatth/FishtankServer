@@ -1,5 +1,12 @@
 # Django settings for backup project.
 
+import django
+
+
+# help us keep relative stuff
+import os
+SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -37,19 +44,26 @@ SITE_ID = 1
 # to load the internationalization machinery.
 USE_I18N = True
 
-# Absolute path to the directory that holds media.
-# Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+if DEBUG:
+	MEDIA_ROOT = ''
+	MEDIA_URL = ''
+	ADMIN_MEDIA_PREFIX = '/admin_media/'
+	ADMIN_MEDIA_ROOT = os.path.join(django.__path__[0], "contrib/admin/media")
+else:
 
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
-
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
+	# Absolute path to the directory that holds media.
+	# Example: "/home/media/media.lawrence.com/"
+	MEDIA_ROOT = ''
+	
+	# URL that handles the media served from MEDIA_ROOT. Make sure to use a
+	# trailing slash if there is a path component (optional in other cases).
+	# Examples: "http://media.lawrence.com", "http://example.com/media/"
+	MEDIA_URL = ''
+	
+	# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
+	# trailing slash.
+	# Examples: "http://foo.com/media/", "/media/".
+	ADMIN_MEDIA_PREFIX = '/media/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'g7@fs$5xqbos+*th-kp0ghbs-@nasc7rc^3gm&pfv@!2c0b55d'
@@ -57,7 +71,7 @@ SECRET_KEY = 'g7@fs$5xqbos+*th-kp0ghbs-@nasc7rc^3gm&pfv@!2c0b55d'
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
 #	'django.template.loaders.filesystem.load_template_source',
-	'django.template.loaders.app_directories.load_template_source',
+	'django.template.loaders.app_directories.Loader',
 #	  'django.template.loaders.eggs.load_template_source',
 )
 
@@ -85,6 +99,7 @@ INSTALLED_APPS = (
 	'django.contrib.databrowse',
 	'dtracker',
 	'manager',
+	'django_cpserver',
 )
 
 
