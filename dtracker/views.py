@@ -9,6 +9,7 @@ from cgi import parse_qs
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
+from django.core import serializers
 #from django.views.generic.list_detail import object_list
 
 from dtracker.bencode import bencode
@@ -220,7 +221,7 @@ def attachedtorrents(request, my_guid):
 	torrs = mc.torrents.values()
 	
 	for t in torrs:
-		my_torrents.append({"name": t['name']})
+		my_torrents.append(t['name'])
 	
 	#body = json.dumps( {'torrents':my_torrents} )
 	body = json.dumps( my_torrents )
@@ -238,16 +239,20 @@ def detachtorrents(request, my_guid):
 	
 	if request.method == "POST":
 		try:
-			torrents = json.loads(request.POST['torrents'])
+			print request.POST
+			torrents_serialized = request.POST['torrents']
+			torrents = json.loads(torrents_serialized)
 		except:
+			print request.POST
 			return HttpResponse("Bad torrent data.")
 			
 		try:
 			mc = ManagedClient.objects.get(guid=my_guid)
 		except:
 			return HttpResponse("Could not get client.")
-			
+		
 		for torrent_name in torrents:
+			print "torent_name", torrent_name
 			try:
 				t = Torrent.objects.get(name=torrent_name)
 			except Torrent.DoesNotExist:
@@ -255,11 +260,12 @@ def detachtorrents(request, my_guid):
 			
 			mc.torrents.remove(t)
 			if t.clientcount() == 0:
-				deleted.append(t)
 				t.delete()
+				
+			deleted.append(t)
 	else:
 		return HttpResponse("No post.")
 	
-	body = json.dumps(t)
-	
+	#body = serializers.serialize("json", deleted)
+	body = json.dumps(deleted)
 	return HttpResponse(body)
