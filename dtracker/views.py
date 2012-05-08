@@ -9,13 +9,14 @@ from cgi import parse_qs
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
-from django.views.generic.list_detail import object_list
+from django.core import serializers
+#from django.views.generic.list_detail import object_list
 
 from dtracker.bencode import bencode
 from dtracker.models import Torrent
 from dtracker.forms import TorrentUploadForm
 from manager.models import ManagedClient, Backup
-
+import json
 
 
 def announce(request):
@@ -52,7 +53,7 @@ def announce(request):
 #		c['guid'] = request.GET['guid']
 
 		# JFM, hack arond unicode issues with info_hash in django
-		hash = parse_qs(request.META['QUERY_STRING'])['info_hash'][0].encode('hex')
+		my_hash = parse_qs(request.META['QUERY_STRING'])['info_hash'][0].encode('hex')
 
 	except KeyError:
 		return _fail("""One of the following is missing: IP, Port, Peer_ID, GUID, or info_hash""")
@@ -68,7 +69,7 @@ def announce(request):
 	c['key']        = request.GET.get('key','none')
 
 	try:
-		TheTorrent = Torrent.objects.get(info_hash=hash)
+		TheTorrent = Torrent.objects.get(info_hash=my_hash)
 	except ObjectDoesNotExist:
 		return _fail("Torrent is not registered, please upload your torrent first at /upload")
 
@@ -121,13 +122,13 @@ def uploadtorrent(request):
 		try:
 			uuid = request.POST['uuid']
 		except KeyError:
-			return HttpResponseBadRequest('UUID not present.')
+			return HttpResponse('UUID not present.')
 	
 		try:
 			backup = Backup.objects.get(fileuuid=uuid)
-		except ObjectDoesNotExist:
-			return HttpResponseBadRequest('Backup does not exist.')
-		
+		except Backup.DoesNotExist:
+			return HttpResponse('Backup does not exist.')
+
 		if form.is_valid():
 			t = form.save()
 			backup.torrent = t
@@ -204,3 +205,66 @@ def clientstatus(request):
 			return HttpResponse("client %s not found" % guid)
 	else:
 		return HttpResponse('ERROR: you must give a client guid and status.')
+		
+def attachedtorrents(request, my_guid):
+	"""
+	Given a client id, return the list of associated torrents from the M2M field.
+	"""
+	my_torrents = []
+	
+	try:
+		mc = ManagedClient.objects.get(guid=my_guid)
+	except ManagedClient.DoesNotExist:
+		return HttpResponse("your guid was not found!")
+	
+	torrs = mc.torrents.values()
+	
+	for t in torrs:
+		my_torrents.append(t['name'])
+	
+	#body = json.dumps( {'torrents':my_torrents} )
+	body = json.dumps( my_torrents )
+	
+	return HttpResponse(body)
+	
+
+def detachtorrents(request, my_guid):
+	"""
+	Given a list of torrents in POST, remove them from the associated client.  If no clients have the torrent,
+	then delete it.
+	"""
+	
+	deleted = []
+	
+	if request.method == "POST":
+		try:
+			print request.POST
+			torrents_serialized = request.POST['torrents']
+			torrents = json.loads(torrents_serialized)
+		except:
+			print request.POST
+			return HttpResponse("Bad torrent data.")
+			
+		try:
+			mc = ManagedClient.objects.get(guid=my_guid)
+		except:
+			return HttpResponse("Could not get client.")
+		
+		for torrent_name in torrents:
+			print "torent_name", torrent_name
+			try:
+				t = Torrent.objects.get(name=torrent_name)
+			except Torrent.DoesNotExist:
+				continue
+			
+			mc.torrents.remove(t)
+			if t.clientcount() == 0:
+				t.delete()
+				
+			deleted.append(t)
+	else:
+		return HttpResponse("No post.")
+	
+	#body = serializers.serialize("json", deleted)
+	body = json.dumps(deleted)
+	return HttpResponse(body)

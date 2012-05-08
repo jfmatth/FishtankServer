@@ -32,6 +32,12 @@ urlpatterns = patterns('dtracker.views',
 	
 	#stop client
 	(r'^status/$',                      'clientstatus'),
+        
+        #given a client guid, return list of torrents
+	(r'^attachedtorrs/(?P<my_guid>[-\w]+)$',               'attachedtorrents'),
+        
+        #given a client guid, return list of torrents
+	(r'^detachtorrs/(?P<my_guid>[-\w]+)$',               'detachtorrents'),
 	
 	(r'torrents/$', list_detail.object_list, info_dict)
 	
