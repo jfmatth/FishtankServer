@@ -15,13 +15,11 @@ from django.contrib.auth.models import User
 # returns new encryption keys.
 def EncryptionKeys():
     # code from :http://www.laurentluce.com/posts/python-and-cryptography-with-pycrypto/
-    print "Generating keys...Please Wait"
+    print "Generating keys...Please Wait",
     random_generator = Random.new().read
     key = RSA.generate(2048, random_generator)  
-
+    print "Done!"
     return key.exportKey(), key.publickey().exportKey()
-
-
 
 """
     Verification - records for registering new clients.  Generated each time a new EXE is gotten?
