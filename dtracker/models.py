@@ -18,7 +18,7 @@ class Torrent(models.Model):
 	announce  = models.CharField("HTTP announce",max_length=100, blank=True)
 	piece_length = models.IntegerField(blank=True, null=True)
 	
-	# standard and Custom manager for counting how many clients hve this torrent.
+	# standard and Custom manager for counting how many clients have this torrent.
 	objects       = models.Manager()
 	needclients   = TorrentCountManager()
 
