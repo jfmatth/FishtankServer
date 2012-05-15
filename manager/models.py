@@ -41,7 +41,7 @@ class Verification(models.Model):
         super(Verification,self).save(*args, **kwargs)
 
     """
-    usekey() - Call when you want to increment the number of uses a verification record has been used.
+    usekey() - Call when yu want to increment the number of uses a verification record has been used.
     """
     def usekey(self):
         self.use_count += 1
@@ -57,7 +57,7 @@ class ManagedClient(models.Model):
     ipaddr = models.IPAddressField(blank=True, null=True)
 
     guid = models.CharField(max_length=50, blank=True)
-    peerid = models.CharField(max_length=50, blank=True)
+    peerid = models.CharField(max_length=20, blank=True)
     
     privatekey = models.TextField()
     publickey = models.TextField()
@@ -80,7 +80,7 @@ class ManagedClient(models.Model):
         # if the guid and/or peerID are blank, make new ones
         if self.id == None:            
             self.guid = str(uuid.uuid4() )
-            self.peerid = str(uuid.uuid4() ) 
+            self.peerid = (self.hostname + self.guid)[:20]
 
             # get our encryption keys.
             priv,pub = EncryptionKeys()

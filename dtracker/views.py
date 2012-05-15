@@ -75,32 +75,18 @@ def announce(request):
 
 	try:
 #		TheClient = ManagedClient.objects.get(guid=c['guid'])
-		TheClient = ManagedClient.objects.get(ipaddr=c['addr'])
+#		TheClient = ManagedClient.objects.get(peerid=c['addr'])
+		TheClient = ManagedClient.objects.get(peerid=c['peer_id'])
 	except ObjectDoesNotExist:
-		return _fail('%s Client does not exist. ' % c['addr'])
+		return _fail('%s Client does not exist. ' % c['peer_id'] )
 
 	TheTorrent.managedclient_set.add(TheClient)
 	TheTorrent.save()
 	
 	addevent(record=TheClient, values=c)
-#	TheClient.save()
 
-#	# see if we have this client in the DB first.
-#	try:
-#		#if a user already eists, we're good.
-#		# Client.ob`jects.get(peer_id=c['peer_id'])
-#		TorrentClient = TheTorrent.managedclient_set.get(guid=c['guid'])
-#		print "Found client "
-#		TorrentClient.port = c['port']
-#		TorrentClient.peer_id = c['peer_id']
-#	except ObjectDoesNotExist:
-#		#if the user doesn't exist, create one
-#		print "Adding new client " 
-#		#TorrentClient = TheTorrent.torrentclient_set.create(ip=c['addr'], port=c['port'], peer_id=c['peer_id'])
-#		return _fail('%s<br />Managed client does not exist: ' % c['guid'])
-#
-#	TorrentClient.addevent(values=c)
-#	TorrentClient.save()
+	TheClient.ipaddr = c['addr']
+	TheClient.save()
 
 	# Send back all clients that aren't us and are running (!stopped)
 	clients = [{'ip': i.ipaddr, 'peer id': i.peerid, 'port': i.port} for i in TheTorrent.managedclient_set.filter(stopped=False).exclude(ipaddr=c['addr'])]
@@ -250,21 +236,25 @@ def detachtorrents(request, my_guid):
 		except:
 			return HttpResponse("Could not get client.")
 		
+		print "looping over torrents"
+		
 		for torrent_name in torrents:
-			print "torent_name", torrent_name
 			try:
 				t = Torrent.objects.get(name=torrent_name)
 			except Torrent.DoesNotExist:
+				print "torrent not found.."
 				continue
 			
 			mc.torrents.remove(t)
 			if t.clientcount() == 0:
 				t.delete()
 				
-			deleted.append(t)
+			deleted.append(str(t) )
 	else:
 		return HttpResponse("No post.")
 	
 	#body = serializers.serialize("json", deleted)
+	print deleted
 	body = json.dumps(deleted)
+	print body
 	return HttpResponse(body)
