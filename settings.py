@@ -99,7 +99,7 @@ INSTALLED_APPS = (
 	'django.contrib.databrowse',
 	'dtracker',
 	'manager',
-	'django_cpserver',
+	'cpserver',
 )
 
 
