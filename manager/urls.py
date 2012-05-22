@@ -15,6 +15,12 @@ urlpatterns = patterns('manager.views',
     #get some files from the cloud for backup
     (r'^getcloud/$','getcloud'),
     
+    # check that the passed GUID is valid.
+    (r'^validclient/$', 'validclient'),
+    
+    # ping the tracker?
+    (r'^ping/$', 'ping'),
+    
     # read / write settings to the manager.
     (r'^setting/(?P<guid>[-\w]+)/(?P<setting>\w+)/$', 'setting'),
      

@@ -18,9 +18,9 @@ class BackupAdmin(admin.ModelAdmin):
     list_display = ('date', 'client', 'fileuuid', '_filecount')
     
 
-    inlines = [
-              FileInLine,
-            ]
+#    inlines = [
+#              FileInLine,
+#            ]
     
     
 admin.site.register(Backup, BackupAdmin)

@@ -232,3 +232,23 @@ def getcloud(request):
         return HttpResponse(tl[0].info_hash)
     else:
         return HttpResponse("")
+
+
+def validclient(request):
+    # 
+    return HttpResponse("valid client check")
+
+def ping(request):
+    """
+    A simple view to see if the server is alive.  Requires a client guid to be passed in, and if the 
+    manager is online and the guid is valid, an OK is sent, otherwise various bad request text's are sent back.
+    """
+    if 'guid' in request.GET:
+        guid=request.GET['guid'] 
+        try:
+            ManagedClient.objects.get(guid__exact=guid)
+            return HttpResponse("OK")
+        except ObjectDoesNotExist:
+            return HttpResponseBadRequest("not registered")
+    else:
+        return HttpResponseBadRequest("NO GUID")
