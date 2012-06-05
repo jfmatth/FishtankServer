@@ -189,17 +189,20 @@ def setting(request, guid, setting):
                 return HttpResponse( getattr(client,fieldname) )
             except:
                 return HttpResponseBadRequest("%s not found" % setting)
-        else:      
+        else:
             try:
-                value = ClientSetting.objects.get(client__guid__exact=guid,
-                                                  name__exact=setting).value
-                return HttpResponse(value)
+                s = ClientSetting.objects.get(client__guid__exact=guid,
+                                              name__exact=setting)
+                                                  
+                # try the value field, otherwise get the bigvalue field.
+                return HttpResponse(s.value or s.bigvalue)
+            
             except ObjectDoesNotExist:
                 # Check for global variables.
                 try:
-                    value = ClientSetting.objects.get(client__guid__exact=GLOBALKEY,
-                                                      name__exact=setting).value
-                    return HttpResponse(value)
+                    s = ClientSetting.objects.get(client__guid__exact=GLOBALKEY,
+                                                  name__exact=setting)
+                    return HttpResponse(s.value or s.bigvalue)
                 except:
                     return HttpResponseBadRequest("Key Not found")
         

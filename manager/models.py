@@ -98,7 +98,8 @@ class ManagedClient(models.Model):
     
 class ClientSetting(models.Model):
     name = models.CharField(max_length=20)
-    value = models.CharField(max_length=50)
+    value = models.CharField(max_length=50, blank=True)
+    bigvalue = models.TextField(blank=True)
     
     client = models.ForeignKey(ManagedClient)
     
