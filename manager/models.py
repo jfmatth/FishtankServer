@@ -94,8 +94,38 @@ class ManagedClient(models.Model):
 
     def torrent_count(self):
         return self.torrents.all().count()
+
+
+class DiskSpace(models.Model):
+    """
+    A record of disk space on a client
+        diskcloud - How much are the cloud files using
+        disksize  - How big is the whole disk
+        diskfree  - How much free space is there.
+        date      - When was this entry made (self updating).
+    """
+    cloud = models.IntegerField()
+    size  = models.IntegerField()
+    free  = models.IntegerField()
+    date  = models.DateTimeField()
     
-    
+    client = models.ForeignKey(ManagedClient)
+
+    def save(self, *args, **kwargs):
+        # Generate various fields
+        if self.id == None:
+            # new record
+            self.date = datetime.datetime.today()
+        
+        super(DiskSpace,self).save(*args, **kwargs)
+
+    def backupsize(self):
+        return self.free / 2 - self.cloud
+
+    def __unicode__(self):
+        return "Disk space s:%s c:%s f:%s - Max:%s" % (self.size, self.cloud, self.free, self.backupsize())
+
+
 class ClientSetting(models.Model):
     name = models.CharField(max_length=20)
     value = models.CharField(max_length=50, blank=True)

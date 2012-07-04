@@ -23,5 +23,7 @@ urlpatterns = patterns('manager.views',
     
     # read / write settings to the manager.
     (r'^setting/(?P<guid>[-\w]+)/(?P<setting>\w+)/$', 'setting'),
+    
+    (r'^diskspace/$', 'diskspace'),
      
 )

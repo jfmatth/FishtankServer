@@ -1,18 +1,19 @@
 import user
 from django.http import HttpResponse, HttpResponseBadRequest
 
-from manager.models import ManagedClient, ClientSetting, Backup, Verification
+from manager.models import ManagedClient, ClientSetting, Backup, Verification, DiskSpace
 from dtracker.models import Torrent
 
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Count, Q
+from django.db.models import Count
 
 import json
 import anydbm
 import os   
 import datetime
+from urllib2 import HTTPBasicAuthHandler
 
 GLOBALKEY = "__global__"
 
@@ -255,3 +256,54 @@ def ping(request):
             return HttpResponseBadRequest("not registered")
     else:
         return HttpResponseBadRequest("NO GUID")
+
+
+def diskspace(request):
+    """
+    A view to update the DiskSpace record for this client.
+    
+    Information is sent to update the diskspace table, and in return, we'll give you what Infohash's can be backed up.
+    """
+    if request.POST:
+        if not ("guid" in request.POST and "cloud" in request.POST and "size" in request.POST and "free" in request.POST):
+            return HttpResponseBadRequest("Missing guid, cloud, size or free")
+        
+        # find the client and update the
+        try: 
+            client = ManagedClient.objects.get( guid__exact=request.POST["guid"] )
+            
+            ds = DiskSpace()
+            ds.client = client
+            ds.cloud = int(request.POST["cloud"])
+            ds.size  = int(request.POST["size"])
+            ds.free  = int(request.POST["free"])
+            ds.save()
+        
+            # now figure out who needs to be backed up.
+            try:
+                # so we can backup a maximum of 50% free space, subtract the cloud usage, and what remains is what we can then use.
+                maxsize = ds.free / 2 - ds.cloud
+                if maxsize > 0:
+                    
+                #    Only return torrents which this client isn't already hosting and other filters / exclusions.
+                    tl = Torrent.objects.filter(managedclient__company=client.company,
+                                                managedclient__stopped=False,
+                                                size__lt=int(maxsize),
+                                                managedclient__verified=True,
+                                                )\
+                                        .exclude(managedclient__guid=request.POST['guid'])\
+                                        .annotate(tc=Count('managedclient')).filter(tc__lt=3)
+                
+                    if len(tl)>0 :
+                        return HttpResponse(tl[0].info_hash)
+                    else:
+                        return HttpResponse("")
+                else:
+                        return HttpResponse("")
+            except:
+                return HttpResponseBadRequest("Error calculating maxsize")
+            
+        except ObjectDoesNotExist:
+            return HttpResponseBadRequest("Client not found")
+    else:
+        return HttpResponseBadRequest("No Get response")

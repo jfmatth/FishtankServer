@@ -1,142 +1,174 @@
 [
-  {
-    "pk": 2,
-    "model": "auth.user",
-    "fields": {
-      "username": "TestCompany",
-      "first_name": "",
-      "last_name": "",
-      "is_active": true,
-      "is_superuser": false,
-      "is_staff": false,
-      "last_login": "2012-01-13 21:48:09",
-      "groups": [],
-      "user_permissions": [],
-      "password": "sha1$41eb2$deebf951b67d38dd44b4d886780747a52c27b60f",
-      "email": "",
-      "date_joined": "2012-01-13 21:48:09"
-    }
-  },
-  {
-    "pk": 1, 
-    "model": "manager.managedclient", 
-    "fields": {
-      "macaddr": "00", 
-      "ipaddr": "", 
-      "company": 1, 
-      "hostname": "global", 
-      "privatekey": "n/a", 
-      "publickey": "n/a", 
-      "peerid": "", 
-      "guid": "__global__"
-    }
-  }, 
-  {
-    "pk": 1, 
-    "model": "manager.clientsetting", 
-    "fields": {
-      "client": 1, 
-      "name": "filespec", 
-      "value": ".+\\.txt$"
-    }
-  }, 
-  {
-    "pk": 2, 
-    "model": "manager.clientsetting", 
-    "fields": {
-      "client": 1, 
-      "name": "backupdrives", 
-      "value": "c:/"
-    }
-  }, 
-  {
-    "pk": 3, 
-    "model": "manager.clientsetting", 
-    "fields": {
-      "client": 1, 
-      "name": "block_sz", 
-      "value": "4096"
-    }
-  }, 
-  {
-    "pk": 4, 
-    "model": "manager.clientsetting", 
-    "fields": {
-      "client": 1, 
-      "name": "dbpath", 
-      "value": "./db/"
-    }
-  }, 
-  {
-    "pk": 5, 
-    "model": "manager.clientsetting", 
-    "fields": {
-      "client": 1, 
-      "name": "cloud_files", 
-      "value": "./cloud/"
-    }
-  }, 
-  {
-    "pk": 6, 
-    "model": "manager.clientsetting", 
-    "fields": {
-      "client": 1, 
-      "name": "cloud_meta", 
-      "value": "./cloud/"
-    }
-  }, 
-  {
-    "pk": 7, 
-    "model": "manager.clientsetting", 
-    "fields": {
-      "client": 1, 
-      "name": "log_level", 
-      "value": "20"
-    }
-  }, 
-  {
-    "pk": 9, 
-    "model": "manager.clientsetting", 
-    "fields": {
-      "client": 1, 
-      "name": "log_path", 
-      "value": "./log/"
-    }
-  }, 
-  {
-    "pk": 10, 
-    "model": "manager.clientsetting", 
-    "fields": {
-      "client": 1, 
-      "name": "temppath", 
-      "value": "c:/temp/"
-    }
-  }, 
-  {
-    "pk": 11, 
-    "model": "manager.clientsetting", 
-    "fields": {
-      "client": 1, 
-      "name": "max_free_perc", 
-      "value": "90"
-    }
-  }, 
-  {
-    "pk": 12, 
-    "model": "manager.clientsetting", 
-    "fields": {
-      "client": 1, 
-      "name": "min_free_gb", 
-      "value": "2"
-    }
-  }, 
-  {
-    "pk": 13, 
-    "model": "manager.clientsetting", 
-    "fields": {
-      "client": 1, 
-      "name": "backupsize", 
-      "value": "1000"
-    }
-  }
+   {
+      "pk": 1, 
+      "model": "manager.verification", 
+      "fields": {
+         "use_count": 5, 
+         "company": 1, 
+         "verifykey": "905a6137-463b-44eb-aeb5-0ea80b313c55", 
+         "goodtill": "2012-06-14"
+      }
+   }, 
+   {
+      "pk": 1, 
+      "model": "manager.managedclient", 
+      "fields": {
+         "uploaded": null, 
+         "macaddr": "00", 
+         "verified": false, 
+         "downloaded": null, 
+         "ipaddr": "", 
+         "company": 1, 
+         "hostname": "global", 
+         "privatekey": "n/a", 
+         "publickey": "n/a", 
+         "torrents": [], 
+         "stopped": true, 
+         "peerid": "", 
+         "guid": "__global__", 
+         "offered": null, 
+         "port": null, 
+         "left": null
+      }
+   }, 
+   {
+      "pk": 1, 
+      "model": "manager.clientsetting", 
+      "fields": {
+         "client": 1, 
+         "name": "filespec", 
+         "value": "", 
+         "bigvalue": ".+\\.wab$|.+\\.vmc$|.+\\.vhd$|.+\\.vo1$|.+\\.vo2$|.+\\.vsv$|.+\\.vud$|.+\\.vmdk$|.+\\.vmsn$|.+\\.vmsd$|.+\\.hdd$|.+\\.vdi$|.+\\.vmwarevm$|.+\\.nvram$|.+\\.vmx$|.+\\.vmem$|.+\\.iso$|.+\\.dmg$|.+\\.sparseimage$|.+\\.sys$|.+\\.cab$|.+\\.exe$|.+\\.msi$|.+\\.dll$|.+\\.dl.$|.+\\.wim$|.+\\.ost$|.+\\.o$|.+\\.qtch$|.+\\.log$|.+\\.ithmb|ntuser.dat"
+      }
+   }, 
+   {
+      "pk": 2, 
+      "model": "manager.clientsetting", 
+      "fields": {
+         "client": 1, 
+         "name": "backupdrives", 
+         "value": "c:/users/john/", 
+         "bigvalue": ""
+      }
+   }, 
+   {
+      "pk": 4, 
+      "model": "manager.clientsetting", 
+      "fields": {
+         "client": 1, 
+         "name": "dbpath", 
+         "value": "/db/", 
+         "bigvalue": ""
+      }
+   }, 
+   {
+      "pk": 5, 
+      "model": "manager.clientsetting", 
+      "fields": {
+         "client": 1, 
+         "name": "cloud_files", 
+         "value": "/cloud/", 
+         "bigvalue": ""
+      }
+   }, 
+   {
+      "pk": 6, 
+      "model": "manager.clientsetting", 
+      "fields": {
+         "client": 1, 
+         "name": "cloud_meta", 
+         "value": "/cloud/", 
+         "bigvalue": ""
+      }
+   }, 
+   {
+      "pk": 7, 
+      "model": "manager.clientsetting", 
+      "fields": {
+         "client": 1, 
+         "name": "log_level", 
+         "value": "10", 
+         "bigvalue": ""
+      }
+   }, 
+   {
+      "pk": 9, 
+      "model": "manager.clientsetting", 
+      "fields": {
+         "client": 1, 
+         "name": "log_path", 
+         "value": "/log/", 
+         "bigvalue": ""
+      }
+   }, 
+   {
+      "pk": 10, 
+      "model": "manager.clientsetting", 
+      "fields": {
+         "client": 1, 
+         "name": "temppath", 
+         "value": "/temp/", 
+         "bigvalue": ""
+      }
+   }, 
+   {
+      "pk": 13, 
+      "model": "manager.clientsetting", 
+      "fields": {
+         "client": 1, 
+         "name": "backupsize", 
+         "value": "1000", 
+         "bigvalue": ""
+      }
+   }, 
+   {
+      "pk": 14, 
+      "model": "manager.clientsetting", 
+      "fields": {
+         "client": 1, 
+         "name": "tracker_ip", 
+         "value": "192.168.56.1:8080", 
+         "bigvalue": ""
+      }
+   }, 
+   {
+      "pk": 16, 
+      "model": "manager.clientsetting", 
+      "fields": {
+         "client": 1, 
+         "name": "log_stream", 
+         "value": "yes", 
+         "bigvalue": ""
+      }
+   }, 
+   {
+      "pk": 18, 
+      "model": "manager.clientsetting", 
+      "fields": {
+         "client": 1, 
+         "name": "dirspec", 
+         "value": "", 
+         "bigvalue": ".*\\\\users\\\\all users\\\\microsoft\\\\.*|.*\\\\program files|.*\\\\?recycle.bin\\\\.*|.*\\\\?recycler\\\\.*|.*\\\\msocache\\\\.*|.*\\\\windows|.*\\\\i386\\\\.*|.*\\\\cygwin\\\\.*|.*\\\\documents and settings\\\\all users\\\\.*|.*\\\\system volume information|.*\\\\client\\\\.*|.*\\\\documents and settings\\\\localservice|.*\\\\documents and settings\\\\networkservice|.*\\\\Temporary Internet Files\\\\.*|.*\\\\development\\\\.*|.*\\\\client\\\\.*|.*\\\\local settings|.*\\\\temp|c:\\\\users\\\\.*\\\\appdata\\\\.*|c:\\\\users\\\\john|.*\\\\documents and settings\\\\.*\\\\application data|.*\\\\documents and settings\\\\.*\\\\local settings|.*\\\\documents and settings\\\\.*\\\\userdata|c:\\\\client"
+      }
+   }, 
+   {
+      "pk": 19, 
+      "model": "manager.clientsetting", 
+      "fields": {
+         "client": 1, 
+         "name": "btctime", 
+         "value": "0", 
+         "bigvalue": ""
+      }
+   }, 
+   {
+      "pk": 20, 
+      "model": "manager.clientsetting", 
+      "fields": {
+         "client": 1, 
+         "name": "bfctime", 
+         "value": "0", 
+         "bigvalue": ""
+      }
+   }
 ]

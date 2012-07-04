@@ -1,11 +1,14 @@
 from django.contrib import admin
-from manager.models import ClientSetting, ManagedClient, Backup, File, Verification
+from manager.models import ClientSetting, ManagedClient, Backup, File, Verification, DiskSpace
 
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('hostname', 'ipaddr', 'stopped', 'torrent_count')
 admin.site.register(ManagedClient, ClientAdmin)
 
-admin.site.register(ClientSetting)
+class ClientSettingAdmin(admin.ModelAdmin):
+    list_filter = ('client',)
+admin.site.register(ClientSetting, ClientSettingAdmin)
+
 
 class FileInLine(admin.TabularInline):
     model = File
@@ -16,6 +19,11 @@ class FileInLine(admin.TabularInline):
 
 class BackupAdmin(admin.ModelAdmin):
     list_display = ('date', 'client', 'fileuuid', '_filecount')
+
+
+
+class FileAdmin(admin.ModelAdmin):
+    list_filter = ('backup',)
     
 
 #    inlines = [
@@ -24,5 +32,6 @@ class BackupAdmin(admin.ModelAdmin):
     
     
 admin.site.register(Backup, BackupAdmin)
-admin.site.register(File)
+admin.site.register(File, FileAdmin)
 admin.site.register(Verification)
+admin.site.register(DiskSpace)
