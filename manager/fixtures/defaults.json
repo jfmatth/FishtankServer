@@ -47,7 +47,7 @@
       "fields": {
          "client": 1, 
          "name": "backupdrives", 
-         "value": "c:/users/john/", 
+         "value": "c:", 
          "bigvalue": ""
       }
    }, 
