@@ -1,19 +1,19 @@
 import user
 from django.http import HttpResponse, HttpResponseBadRequest
 
-from manager.models import ManagedClient, ClientSetting, Backup, Verification, DiskSpace
+from manager.models import ManagedClient, ClientSetting, Backup, Verification, DiskSpace, Restore, RestoreFile
 from dtracker.models import Torrent
 
 from django import forms
-from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
+from django.shortcuts import get_object_or_404
 
 import json
 import anydbm
 import os   
 import datetime
-from urllib2 import HTTPBasicAuthHandler
+import urllib
 
 GLOBALKEY = "__global__"
 
@@ -32,18 +32,16 @@ def main(request):
 
 def handledbm(rPOST, rFILES):
 
-#    uploaddbm = 'injest/temp.dbm'    
     uploaddbm = 'injest/' + rPOST['backupguid']
     
     clientguid = rPOST['clientguid']
-    ekey = rPOST['eKey'] 
+    ekey = rPOST['eKey']
     
     # first, find the client this data belongs to
     try:
         client = ManagedClient.objects.get(guid=clientguid)
 
         dbmfile = rFILES['dFile']
-        ekey
         # save the file somewhere first
         destination = open(uploaddbm, 'wb+')
         for chunk in dbmfile.chunks():
@@ -307,3 +305,74 @@ def diskspace(request):
             return HttpResponseBadRequest("Client not found")
     else:
         return HttpResponseBadRequest("No Get response")
+
+
+def restore(request, guid):
+    """
+    Given a client GUID it returns a JSON string of all files restored, and each of their coorepsonding torrent infohashes.
+    """
+    #lookup the client first
+    c = get_object_or_404(ManagedClient, guid__exact=guid)        
+    
+    if request.method == "GET":
+        # GET to check if there are any restores needed
+        r = Restore.objects.all().\
+                filter(client=c, completed=False).\
+                order_by("requested")
+        
+        if len(r) > 0:
+            # only return the restores for this request.
+            rl = r[0].restorefile_set.all().order_by("file__backup__torrent__info_hash")
+            
+            # rl now has all the restores to be done, so return them as a JSON file
+            #
+            # return down a dictionary by infohash for every file in that infohash that should be
+            # restored, including the record ID  
+
+            RestoreDict = {}
+            RestoreDict = {"id": r[0].id,
+                           'restores':{}}
+            for l in rl:
+                if not l.file.backup.torrent.info_hash in RestoreDict['restores']:
+                    RestoreDict['restores'][l.file.backup.torrent.info_hash]  = {'key': l.file.backup.encryptkey,
+                                                                    'zipfile': l.file.backup.torrent.name,
+                                                                    'files':[] }
+                # use .append() instead of +=
+                RestoreDict['restores'][l.file.backup.torrent.info_hash]['files'].append( (l.file.fullpath+"\\"+l.file.filename, l.file.id) )
+
+            # now we have a dict of what we want, just JSON it and return it
+            return HttpResponse( json.dumps(RestoreDict) )
+        else:
+            return HttpResponse("no records", status=204)
+    
+    elif request.method=="POST":
+        print request.POST
+        
+        if "restore" in request.POST and "status" in request.POST:
+            # we are posting back the status of the restore job, restore is the ID of the job
+            try:
+                id = request.POST["restore"]
+                r = Restore.objects.get(pk=id)
+                if request.POST["status"] == "complete":
+                    r.completed = True
+                    r.save()
+                    
+#                return HttpResponse("Posted")
+            except:
+#                return HttpResponse("Error")
+                pass
+        
+        if "file" in request.POST and "status" in request.POST:
+                id = request.POST["file"]
+                r = RestoreFile.objects.get(pk=id)
+                if request.POST["status"] == "complete":
+                    r.completed = True
+                    r.save()
+                    
+                print "Updated the File record"
+#                return HttpResponse("Posted")
+
+        return HttpResponse("POST CODE")
+                    
+    
+    

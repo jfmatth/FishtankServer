@@ -132,7 +132,7 @@ class ClientSetting(models.Model):
     bigvalue = models.TextField(blank=True)
     
     client = models.ForeignKey(ManagedClient)
-    
+
     def __unicode__(self):
         return "%s, %s = %s" %(self.client,self.name,self.value)
 
@@ -141,9 +141,9 @@ class Backup(models.Model):
     fileuuid = models.CharField(max_length=50)
     date = models.DateTimeField( )
     torrent = models.OneToOneField(Torrent, null=True)
-    
+
     client = models.ForeignKey(ManagedClient)
-    
+   
     def __unicode__(self):
         return "%s %s" % (self.client,self.date)
     
@@ -162,4 +162,31 @@ class File(models.Model):
     backup = models.ForeignKey(Backup)
     
     def __unicode__(self):
-        return "%s" % self.fullpath
+        return "%s-%s-%s" % (self.fullpath, self.filename, self.moddate)
+    
+RESTORE_CHOICES=( 
+                    ("C", "Complete"),
+                    ("F", "Failed"),
+                    ("R", "Restoring"),
+                 )
+    
+class Restore(models.Model):
+    client = models.ForeignKey(ManagedClient, null=False, related_name="client")
+    requested = models.DateTimeField()
+    retoreclient = models.ForeignKey(ManagedClient, blank=True, null=True, related_name="restoreclient")
+    completed = models.BooleanField()
+    status = models.CharField(max_length=15, blank=True, choices=RESTORE_CHOICES)
+    
+    def __unicode__(self):
+        return "%s - %s" % (self.client.hostname, self.id)
+
+    
+class RestoreFile(models.Model):
+    restore = models.ForeignKey(Restore)
+    file = models.ForeignKey(File)
+    status = models.CharField(max_length=15, blank=True, choices=RESTORE_CHOICES)
+    completed = models.BooleanField()
+    notes = models.CharField(max_length=255, blank=True)
+    
+    def __unicode__(self):
+        return "%s-%s" % (self.restore.id, self.id)

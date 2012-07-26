@@ -25,5 +25,7 @@ urlpatterns = patterns('manager.views',
     (r'^setting/(?P<guid>[-\w]+)/(?P<setting>\w+)/$', 'setting'),
     
     (r'^diskspace/$', 'diskspace'),
+    
+    (r'^restore/(?P<guid>[-\w]+)/$', 'restore'),
      
 )

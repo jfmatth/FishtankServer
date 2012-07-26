@@ -1,5 +1,5 @@
 from django.contrib import admin
-from manager.models import ClientSetting, ManagedClient, Backup, File, Verification, DiskSpace
+from manager.models import ClientSetting, ManagedClient, Backup, File, Verification, DiskSpace, Restore, RestoreFile
 
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('hostname', 'ipaddr', 'stopped', 'torrent_count')
@@ -21,15 +21,17 @@ class BackupAdmin(admin.ModelAdmin):
     list_display = ('date', 'client', 'fileuuid', '_filecount')
 
 
-
 class FileAdmin(admin.ModelAdmin):
     list_filter = ('backup',)
-    
+    list_display = ('filename', 'size', 'fullpath')
 
-#    inlines = [
-#              FileInLine,
-#            ]
-    
+
+class RestoreAdmin(admin.ModelAdmin):
+    list_display = ("client","completed", )
+
+
+admin.site.register(Restore, RestoreAdmin)
+admin.site.register(RestoreFile)
     
 admin.site.register(Backup, BackupAdmin)
 admin.site.register(File, FileAdmin)
