@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+
+
+<div class="row">
+
+<div class="span2">
+	{% include "content/account/nav_left.html" %}
+</div>
+
+<div class="span1"> </div>
+
+
+<div class="span7">
+This is the account restore page.<br />
+
+
+
+
+
+
+<div id="my_tree">
+
+</div>
+
+
+blah<br />
+
+
+<table class="table" id="mytree">
+  <thead>
+    <tr>
+      <th>Host</th>
+      <th>Restore</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id="zone-1">
+      <td>Zone 1</td>
+      <td><input type="checkbox" name="" value="blah"></td>
+    </tr>
+    <tr id="zone-1-1" class="child-of-zone-1">
+      <td>Node 1.1</td>
+      <td><input type="checkbox" name="" value="blah"></td>
+    </tr>
+    <tr id="zone-1-2" class="child-of-zone-1">
+      <td>Node 1.2</td>
+      <td><input type="checkbox" name="" value="blah"></td>
+    </tr>
+    <tr id="zone-1-3" class="child-of-zone-1">
+      <td>Node 1.3</td>
+      <td><input type="checkbox" name="" value="blah"></td>
+    </tr>
+    <tr id="zone-2">
+      <td>Zone 2</td>
+      <td><input type="checkbox" name="" value="blah"></td>
+    </tr>
+    <tr id="zone-2-1" class="child-of-zone-2">
+      <td>Node 2.1</td>
+      <td><input type="checkbox" name="" value="blah"></td>
+    </tr>
+    <tr id="zone-2-1-1" class="child-of-zone-2-1">
+      <td>Node 2.1.1</td>
+      <td><input type="checkbox" name="" value="blah"></td>
+    </tr>
+    <tr id="zone-2-2" class="child-of-zone-2">
+      <td>Node 2.2</td>
+      <td><input type="checkbox" name="" value="blah"></td>
+    </tr>
+    <tr id="zone-2-2-1" class="child-of-zone-2-2">
+      <td>Node 2.2.1</td>
+      <td><input type="checkbox" name="" value="blah"></td>
+    </tr>
+    <tr id="zone-2-2-2" class="child-of-zone-2-2">
+      <td>Node 2.2.2</td>
+      <td><input type="checkbox" name="" value="blah"></td>
+    </tr>
+  </tbody>
+</table>
+
+
+</div>
+
+</div>
+
+
+
+
+{% endblock %}

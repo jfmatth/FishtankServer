@@ -6,5 +6,7 @@ runserver.cmd
 .pydevproject
 *.dbm
 client.exe
+.settings
+fixtures
 *.komodoproject
 rs.cmd
