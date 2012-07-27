@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+    <head>
+        <meta charset="utf-8" />
+        <title>Bootstrap test</title>
+        <!-- HTML5 shim, for IE6-8 support of HTML elements -->
+        <!--[if lt IE 9]>
+            <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <script src="{{ STATIC_URL }}js/bootstrap.js"></script>
+        <script src="{{ STATIC_URL }}js/bootstrap-tab.js"></script>
+        <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+        <script src="{{ STATIC_URL }}js/jquery-1.7.2.min.js"></script>
+
+        
+    	<link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
+    	<link href="{{ STATIC_URL }}css/bootstrap-responsive.min.css" rel="stylesheet">
+    	<link href="{{ STATIC_URL }}css/docs.css" rel="stylesheet">
+
+
+
+		<!-- File Tree -->
+		<script src="{{ STATIC_URL }}js/jquery.easing.js"></script>
+		<script src="{{ STATIC_URL }}js/jqueryFileTree/jqueryFileTree.js" type="text/javascript"></script>
+		<link href="{{ STATIC_URL }}js/jqueryFileTree/jqueryFileTree.css" rel="stylesheet" type="text/css" media="screen" />
+
+	 	<script type="text/javascript">
+
+	   	var _gaq = _gaq || [];
+		  _gaq.push(['_setAccount', 'UA-23019901-1']);
+		  _gaq.push(['_setDomainName', "bootswatch.com"]);
+  		  _gaq.push(['_setAllowLinker', true]);
+		  _gaq.push(['_trackPageview']);
+
+	   (function() {
+	     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	   })();
+
+	 </script>
+        
+
+	 <script type="text/javascript">
+	
+	$(document).ready( function() {
+	    $('#my_tree').fileTree({
+	        root: './',
+	        script: 'jqueryFileTree.py',
+	        expandSpeed: 1000,
+	        collapseSpeed: 1000,
+	        multiFolder: true
+	    }, function(file) {
+	        alert(file);
+	    });
+	});
+	
+	</script>
+    
+        
+    </head>
+    <body class="preview" data-spy="scroll" data-target=".subnav" data-offset="50">
+    
+    
+      <!-- Top Navbar
+    ================================================== -->
+	 <div class="navbar navbar-fixed-top">
+	   <div class="navbar-inner">
+	     <div class="container">
+	       <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+	         <span class="icon-bar"></span>
+	         <span class="icon-bar"></span>
+	         <span class="icon-bar"></span>
+	       </a>
+	       <a class="brand" href="../"></a>
+	       <div class="nav-collapse" id="main-menu">
+	
+	       </div>
+	     </div>
+	   </div>
+	 </div>
+    
+    
+    
+    
+    
+       <div class="container">
+    
+    
+    <!-- Masthead
+================================================== -->
+<header class="jumbotron subhead" id="overview">
+  
+  <h1>Fishtank</h1>
+    
+  <p class="lead">Protecting your data.  In the cloud.</p>
+  <div class="subnav">
+    <ul class="nav nav-pills">
+      <li><a href="{% url content_home %}">Home</a></li>
+      <li><a href="{% url content_pricing %}">Pricing</a></li>
+      <li><a href="{% url content_faq %}">FAQ</a></li>
+            
+      {% if user.is_authenticated %} 
+      	<li><a href="{% url content_download %}">Download</a></li>
+      	<li><a href="{% url auth_logout %}">Logout</a></li>
+      {% else %}
+      	<li><a href="{% url registration_register %}">Register</a></li>	
+      	<li><a href="{% url auth_login %}">Login</a></li>
+      {% endif %}
+    </ul>
+  </div>
+</header>
+    
+    
+       {% block content %}{% endblock %}
+       </div>
+       
+       
+       
+         <!-- Bottom Navbar
+    ================================================== -->
+	 <div class="navbar navbar-fixed-bottom">
+	   <div class="navbar-inner">
+	     <div class="container">
+	       <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+	         <span class="icon-bar"></span>
+	         <span class="icon-bar"></span>
+	         <span class="icon-bar"></span>
+	       </a>
+	       <a class="brand" href="../"></a>
+	       <div class="nav-collapse" id="main-menu">
+	
+	       </div>
+	     </div>
+	   </div>
+	 </div>
+       
+       
+       
+    </body>
+</html>
