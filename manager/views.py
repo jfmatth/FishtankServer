@@ -63,7 +63,8 @@ def handledbm(rPOST, rFILES):
             d = json.loads(db[key])
             newbackup.file_set.create(
                 filename = os.path.basename(d['filename']),
-                fullpath = os.path.dirname(d['filename']),
+#                fullpath = os.path.dirname(d['filename']),
+                fullpath = os.path.dirname(d['filename']).replace("\\", "/"),
                 crc = d['crc'],
                 size = d['size'],
                 moddate = datetime.datetime.strptime(d['modified'],DATETIMEFMT),
