@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth import models as auth_models
 import datetime
 from dtracker.bencode import bdecode, bencode
-from sha import *
+from hashlib import sha1
 
 class TorrentCountManager(models.Manager):
 	# returns a list of torrents that have less than 3 clients, hard coded 3 for now, will figure more out later.
@@ -55,7 +55,7 @@ class Torrent(models.Model):
 			# note, this will only work for single file torrents which have the length key in the info dictionary
 			info = metainfo['info']	   
 			if info.has_key('length'):
-				self.info_hash	  = sha(bencode(info)).hexdigest()
+				self.info_hash	  = sha1(bencode(info)).hexdigest()
 				self.piece_length = info['piece length']
 				self.announce	  = metainfo['announce']
 				self.size		  = info['length']
