@@ -10,3 +10,4 @@ client.exe
 fixtures
 *.komodoproject
 rs.cmd
+local_settings.py

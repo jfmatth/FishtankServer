@@ -24,6 +24,7 @@ class BackupAdmin(admin.ModelAdmin):
 class FileAdmin(admin.ModelAdmin):
     list_filter = ('backup',)
     list_display = ('filename', 'size', 'fullpath')
+    search_fields = ['filename', 'fullpath']
 
 
 class RestoreAdmin(admin.ModelAdmin):

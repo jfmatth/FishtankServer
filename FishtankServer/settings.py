@@ -73,7 +73,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    'C:\Development\FishtankServer\FishtankServer\static',
+    os.path.join(SITE_ROOT, "static"),
 )
 
 # List of finder classes that know how to find static files in
@@ -136,12 +136,8 @@ INSTALLED_APPS = (
 ACCOUNT_ACTIVATION_DAYS=14
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-DEFAULT_FROM_EMAIL="Kyle.F@uhnd.com"
-EMAIL_HOST="mail.uhnd.com"
 #EMAIL_HOST="webmail.richweb.com"
 EMAIL_PORT=25
-EMAIL_HOST_USER="Kyle.F@uhnd.com"
-EMAIL_HOST_PASSWORD="nd4ever1"
 #EMAIL_USE_TLS=True
 
 LOGIN_URL="/accounts/login/"
@@ -175,3 +171,9 @@ LOGGING = {
         },
     }
 }
+
+
+try:
+    import local_settings
+except:
+    pass
