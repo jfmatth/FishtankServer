@@ -30,7 +30,7 @@ DATABASES = {
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'America/Los_Angeles'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -73,7 +73,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    'C:\Development\FishtankServer\FishtankServer\static',
+    os.path.join(SITE_ROOT, "static"),
 )
 
 # List of finder classes that know how to find static files in
@@ -140,8 +140,6 @@ DEFAULT_FROM_EMAIL="Kyle.F@uhnd.com"
 EMAIL_HOST="mail.uhnd.com"
 #EMAIL_HOST="webmail.richweb.com"
 EMAIL_PORT=25
-EMAIL_HOST_USER="Kyle.F@uhnd.com"
-EMAIL_HOST_PASSWORD="nd4ever1"
 #EMAIL_USE_TLS=True
 
 LOGIN_URL="/accounts/login/"

@@ -63,7 +63,6 @@ def handledbm(rPOST, rFILES):
             d = json.loads(db[key])
             newbackup.file_set.create(
                 filename = os.path.basename(d['filename']),
-#                fullpath = os.path.dirname(d['filename']),
                 fullpath = os.path.dirname(d['filename']).replace("\\", "/"),
                 crc = d['crc'],
                 size = d['size'],
@@ -119,17 +118,6 @@ def register(request):
     if missinginfo:
         return HttpResponseBadRequest("Unable to register")
 
-# JFM, change way we register, not with ID / Password anymore, use the verification table.
-#    # validate the user ID and password
-#    try:
-#        user = User.objects.get(pk=request.POST['userid'])
-#
-#        if not user.check_password(request.POST['password']):
-#            return HttpResponseBadRequest("Unable to login")
-#
-#    except ObjectDoesNotExist:
-#        return HttpResponseBadRequest("Unable to login")
-
     # try to find the verifykey and see if it's OK.
     try:
         k = Verification.objects.get(verifykey = request.POST['verifykey'])
@@ -153,6 +141,10 @@ def register(request):
         #mc = user.managedclient_set.get(hostname__exact = request.POST['hostname'],
         #                                macaddr__exact  = request.POST['macaddr'] )
         mc = user.managedclient_set.get(hostname__exact = request.POST['hostname'] )
+        
+        if mc.macaddr <> request.POST['macaddr']:
+            # same name, different mac?
+            raise ObjectDoesNotExist
         
         mc.ipaddr = request.POST['ipaddr']
         mc.save()
