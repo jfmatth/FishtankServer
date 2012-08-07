@@ -70,7 +70,7 @@ class AccountFileDirView(TemplateView):
         if get_hosts:
             hosts = ManagedClient.objects.filter(company__username=request.user.username)
             for h in hosts:
-                r.append('<li class="directory collapsed"><a href="#" rel="%s">%s</a></li>' % ("c:\\\\",h.hostname))
+                r.append('<li class="directory collapsed"><a href="#" class="%s" rel="%s">%s</a></li>' % (h.hostname, "c:\\\\",h.hostname))
             r.append('</ul>')
         else:        
             try:
@@ -78,21 +78,28 @@ class AccountFileDirView(TemplateView):
                 print 'getting files....'
                 r=['<ul class="jqueryFileTree" style="display: none;">']
                 dirpath = urllib.unquote(request.POST.get('dir'))
+                hostname= urllib.unquote(request.POST.get('host'))
                 
                 # dirpath - c:\\dir1\\subdir1, c:\\
                 # relpath - dir1\\subdir1, \\             
                 
                 print "your directory", dirpath, repr(dirpath), str(dirpath)
+                print "your host", hostname
                 
+                # deal with the backslash on the root "c:\" drives
                 if os.path.normpath(dirpath) == os.path.normpath('c:\\'):  #'c:\\\\':
                     print "setting up regex for root"
                     f_regex = dirpath + r"$"
-                    d_regex = dirpath + r"[^\\]+\\.+$"          
+                    #d_regex = dirpath + r"[^\\]+\\.+$"
+                    # original d_regex was not picking up all directories...
+                    d_regex = dirpath + r"[^\\]+(\\.+)*$"          
                 
                 else:              
                     print "setting up regex for subtree"
                     f_regex = dirpath + "$"
-                    d_regex = dirpath + r"\\[^\\]+\\.+$"
+                    #d_regex = dirpath + r"\\[^\\]+\\.+$"
+                    # original d_regex was not picking up all directories...
+                    d_regex = dirpath + r"\\[^\\]+(\\.+)*$"
                     dirpath = dirpath + "\\\\"
                 
                 print "f_regex", f_regex
@@ -103,7 +110,7 @@ class AccountFileDirView(TemplateView):
                 # returns dicts
                 # I can't put files and directories into the same query, because the returned objects differ.
                 # So we break them out like so...
-                directories = File.objects.filter( Q(fullpath__regex=d_regex) ).values("fullpath").distinct()
+                directories = File.objects.filter( Q(backup__client__hostname=hostname) &  Q(fullpath__regex=d_regex) ).values("fullpath").distinct()
                 for d in directories:
                     #print "stripping", os.path.normpath(dirpath), "from ", d['fullpath']
                     dir_prefix = d['fullpath'][len(os.path.normpath(dirpath)):]
@@ -123,7 +130,7 @@ class AccountFileDirView(TemplateView):
                     
                 
                 # returns File objects
-                files = File.objects.filter( Q(fullpath__regex=f_regex) )
+                files = File.objects.filter( Q(backup__client__hostname=hostname) & Q(fullpath__regex=f_regex) )
                 for f in files:
                     print f
                 
@@ -132,22 +139,136 @@ class AccountFileDirView(TemplateView):
                 
                 for f in files:
                     e=os.path.splitext(f.filename)[1][1:] # get .ext and remove dot
-                    r.append('<li class="file ext_%s"><a href="#" rel="%s">%s</a></li>' % (e,os.path.normpath(f.fullpath + f.filename).strip("c:\\"),f.filename))
+                    r.append('<li class="file ext_%s"><a href="#" class="%s" rel="%s">%s</a></li>' % (e,
+                                                                                                      hostname,
+                                                                                                      os.path.normpath(f.fullpath + f.filename),
+                                                                                                      f.filename))
                 
                 
                 for d in s:
-                    r.append('<li class="directory collapsed"><a href="#" rel="%s">%s</a></li>' % (dirpath + d,os.path.basename(d))) 
+                    r.append('<li class="directory collapsed"><a href="#" class="%s" rel="%s">%s</a></li>' % (hostname,
+                                                                                                              dirpath + d,
+                                                                                                              os.path.basename(d))) 
                 
-                
-#                for f in os.listdir(d):
-#                    ff=os.path.join(d,f)
-#                    if os.path.isdir(ff):
-#                        r.append('<li class="directory collapsed"><a href="#" rel="%s/">%s</a></li>' % (ff,f))
-#                    else:
-#                        e=os.path.splitext(f)[1][1:] # get .ext and remove dot
-#                        r.append('<li class="file ext_%s"><a href="#" rel="%s">%s</a></li>' % (e,ff,f))
                 r.append('</ul>')
             except Exception,e:
                 r.append('Could not load directory: %s' % str(e))
         return HttpResponse(r)
-        #return render_to_response('content/account/file_dir.html', {'stuff': "this is a test of context"})
+
+class AccountFileCheckoutView(TemplateView):
+    """
+    Files checked out for restore.
+    """
+    template_name = "content/account/file_checkout.html"
+    success_url = "/"
+    
+    def post(self, request, *args, **kwargs):
+        
+        #self.context['somecrap'] = "this is a test of context"
+        
+        print "I'm here!"
+        
+        return HttpResponse("What!  Here's your returned data.")
+        
+        try:
+            print "getting directories..."
+                        
+            if request.POST['dir']:
+                get_hosts = False
+                dir = request.POST['dir']
+            else:
+                print "getting hosts..."
+                get_hosts = True
+        except Exception,e:
+            return HttpResponse('Could not load directory: %s' % str(e))
+        
+        
+        r=['<ul class="jqueryFileTree" style="display: none;">']
+        
+        if get_hosts:
+            hosts = ManagedClient.objects.filter(company__username=request.user.username)
+            for h in hosts:
+                r.append('<li class="directory collapsed"><a href="#" class="%s" rel="%s">%s</a></li>' % (h.hostname, "c:\\\\",h.hostname))
+            r.append('</ul>')
+        else:        
+            try:
+                
+                print 'getting files....'
+                r=['<ul class="jqueryFileTree" style="display: none;">']
+                dirpath = urllib.unquote(request.POST.get('dir'))
+                hostname= urllib.unquote(request.POST.get('host'))
+                
+                # dirpath - c:\\dir1\\subdir1, c:\\
+                # relpath - dir1\\subdir1, \\             
+                
+                print "your directory", dirpath, repr(dirpath), str(dirpath)
+                print "your host", hostname
+                
+                # deal with the backslash on the root "c:\" drives
+                if os.path.normpath(dirpath) == os.path.normpath('c:\\'):  #'c:\\\\':
+                    print "setting up regex for root"
+                    f_regex = dirpath + r"$"
+                    #d_regex = dirpath + r"[^\\]+\\.+$"
+                    # original d_regex was not picking up all directories...
+                    d_regex = dirpath + r"[^\\]+(\\.+)*$"          
+                
+                else:              
+                    print "setting up regex for subtree"
+                    f_regex = dirpath + "$"
+                    #d_regex = dirpath + r"\\[^\\]+\\.+$"
+                    # original d_regex was not picking up all directories...
+                    d_regex = dirpath + r"\\[^\\]+(\\.+)*$"
+                    dirpath = dirpath + "\\\\"
+                
+                print "f_regex", f_regex
+                print "d_regex", d_regex
+                
+                s=set()
+                               
+                # returns dicts
+                # I can't put files and directories into the same query, because the returned objects differ.
+                # So we break them out like so...
+                directories = File.objects.filter( Q(backup__client__hostname=hostname) &  Q(fullpath__regex=d_regex) ).values("fullpath").distinct()
+                for d in directories:
+                    #print "stripping", os.path.normpath(dirpath), "from ", d['fullpath']
+                    dir_prefix = d['fullpath'][len(os.path.normpath(dirpath)):]
+                    #print "prefix ", dir_prefix
+                    dir_prefix = dir_prefix.lstrip("\\")
+                    #print "stripped prefix ", dir_prefix
+                    
+                    dir_prefix = dir_prefix.split("\\", 1)[0]
+                    
+                    #print "prefix", dir_prefix
+                    s.add(dir_prefix)
+                    
+                print "your top level directories"
+                for i in s:
+                    print i
+                print "end top level directories"
+                    
+                
+                # returns File objects
+                files = File.objects.filter( Q(backup__client__hostname=hostname) & Q(fullpath__regex=f_regex) )
+                for f in files:
+                    print f
+                
+                #for d in directories:
+                #    r.append('<li class="directory collapsed"><a href="#" rel="%s">%s</a></li>' % (d,os.path.basename(d)))
+                
+                for f in files:
+                    e=os.path.splitext(f.filename)[1][1:] # get .ext and remove dot
+                    r.append('<li class="file ext_%s"><a href="#" class="%s" rel="%s">%s</a></li>' % (e,
+                                                                                                      hostname,
+                                                                                                      os.path.normpath(f.fullpath + f.filename).strip("c:\\"),
+                                                                                                      f.filename))
+                
+                
+                for d in s:
+                    r.append('<li class="directory collapsed"><a href="#" class="%s" rel="%s">%s</a></li>' % (hostname,
+                                                                                                              dirpath + d,
+                                                                                                              os.path.basename(d))) 
+                
+                r.append('</ul>')
+            except Exception,e:
+                r.append('Could not load directory: %s' % str(e))
+        return HttpResponse(r)

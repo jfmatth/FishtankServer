@@ -48,10 +48,10 @@ if(jQuery) (function($){
 			if( o.loadMessage == undefined ) o.loadMessage = 'Loading...';
 			
 			$(this).each( function() {
-				function showTree(c, t) {
+				function showTree(c, t, h) {
 					$(c).addClass('wait');
 					$(".jqueryFileTree.start").remove();
-					$.post("/content/file_dir/", { dir: t }, function(data) {
+					$.post("/content/file_dir/", { dir: t, host: h }, function(data) {
 						$(c).find('.start').html('');
 						$(c).removeClass('wait').append(data);
 						if( o.root == t ) $(c).find('UL:hidden').show(); else $(c).find('UL:hidden').slideDown({ duration: o.expandSpeed, easing: o.expandEasing });
@@ -69,7 +69,10 @@ if(jQuery) (function($){
 									$(this).parent().parent().find('LI.directory').removeClass('expanded').addClass('collapsed');
 								}
 								$(this).parent().find('UL').remove(); // cleanup
-								showTree( $(this).parent(), escape($(this).attr('rel').match( /.*/ )) );
+								
+								
+								
+								showTree( $(this).parent(), escape($(this).attr('rel').match( /.*/ )), escape($(this).attr('class').match( /.*/ )) );
 								$(this).parent().removeClass('collapsed').addClass('expanded');
 							} else {
 								// Collapse
@@ -77,7 +80,37 @@ if(jQuery) (function($){
 								$(this).parent().removeClass('expanded').addClass('collapsed');
 							}
 						} else {
-							h($(this).attr('rel'));
+							
+							/* bolds the css style...
+							if ( $(this).parent().hasClass('restore') ) {
+								$(this).parent().removeClass('restore');
+							} else {
+								$(this).parent().addClass('restore');
+							}*/
+							
+							//h("Selected " + $(this).attr('rel') + " for restore.  Good for you!");
+							
+							
+							var li_class = $(this).parent().attr('class')
+							var a_class = $(this).attr('class')
+							var a_rel = $(this).attr('rel')
+							
+							//$(this).attr('rel')
+							//$('#my_checkout').find('UL').append($(this).attr('rel'));
+							$('#my_checkout').find('UL').append('<li class="'+li_class+
+																'"><a href="#" class="'+a_class+'" rel="'+a_rel+'">'+a_rel+'</a></li>');
+							
+							//$('#my_checkout').find('UL').each($(this).addclass('foo'));
+							
+							
+							/*
+							$.post("/content/file_checkout/", { dir: "stuff here" }, function(data) {
+								alert("returned: " + data);
+								//$(c).find('.start').html('');
+								//$(c).removeClass('wait').append(data);
+								//if( o.root == t ) $(c).find('UL:hidden').show(); else $(c).find('UL:hidden').slideDown({ duration: o.expandSpeed, easing: o.expandEasing });
+								//bindTree(c);
+							})*/
 						}
 						return false;
 					});
@@ -86,8 +119,11 @@ if(jQuery) (function($){
 				}
 				// Loading message
 				$(this).html('<ul class="jqueryFileTree start"><li class="wait">' + o.loadMessage + '<li></ul>');
+				
+				// For the checkout div
+				$('#my_checkout').html('<ul class="jqueryFileTree"></ul>');
 				// Get the initial file list
-				showTree( $(this), "" );
+				showTree( $(this), "", "");
 			});
 		}
 	});
