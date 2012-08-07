@@ -1,13 +1,13 @@
 from django.conf.urls.defaults import *
 from dtracker.models import Torrent
-from django.views.generic.list_detail import object_list
+#from django.views.generic.list_detail import object_list
 
 # Databrowse suppot #
-from django.contrib import databrowse
+#from django.contrib import databrowse
 #databrowse.site.register(Torrent)
 #databrowse.site.register(Torrentclient)
 
-from django.views.generic import list_detail
+#from django.views.generic import list_detail
 
 info_dict = {'queryset':Torrent.objects.all(),}
 
@@ -39,7 +39,7 @@ urlpatterns = patterns('dtracker.views',
         #given a client guid, return list of torrents
 	(r'^detachtorrs/(?P<my_guid>[-\w]+)$',               'detachtorrents'),
 	
-	(r'torrents/$', list_detail.object_list, info_dict)
+#	(r'torrents/$', list_detail.object_list, info_dict)
 	
 	#databrowse
 	#(r'^databrowse/(.*)', databrowse.site.root),

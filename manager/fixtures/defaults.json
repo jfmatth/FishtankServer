@@ -47,7 +47,7 @@
       "fields": {
          "client": 1, 
          "name": "backupdrives", 
-         "value": "c:", 
+         "value": "c:/backuptest/", 
          "bigvalue": ""
       }
    }, 
@@ -122,16 +122,6 @@
       }
    }, 
    {
-      "pk": 14, 
-      "model": "manager.clientsetting", 
-      "fields": {
-         "client": 1, 
-         "name": "tracker_ip", 
-         "value": "192.168.56.1:8080", 
-         "bigvalue": ""
-      }
-   }, 
-   {
       "pk": 16, 
       "model": "manager.clientsetting", 
       "fields": {
@@ -170,5 +160,16 @@
          "value": "0", 
          "bigvalue": ""
       }
+   },
+   {
+      "pk": 21, 
+      "model": "manager.clientsetting", 
+      "fields": {
+         "client": 1, 
+         "name": "rfctime", 
+         "value": "0", 
+         "bigvalue": ""
+      }
    }
+
 ]
