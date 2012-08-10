@@ -80,6 +80,7 @@ if(jQuery) (function($){
 								$(this).parent().removeClass('expanded').addClass('collapsed');
 							}
 						} else {
+							// this fires off when we click a file in the checkout tree
 							
 							/* bolds the css style...
 							if ( $(this).parent().hasClass('restore') ) {
@@ -99,29 +100,54 @@ if(jQuery) (function($){
 							//$('#my_checkout').find('UL').append($(this).attr('rel'));
 							$('#my_checkout').find('UL').append('<li class="'+li_class+
 																'"><a href="#" class="'+a_class+'" rel="'+a_rel+'">'+a_rel+'</a></li>');
+							if (!$('#restore').is(":visible") ) {
+								$('#restore').show();
+							}
 							
-							//$('#my_checkout').find('UL').each($(this).addclass('foo'));
+							
+							var li_obj = $('#my_checkout').find('LI');
+							li_obj.each( function() {
+								$(this).bind(o.folderEvent, function() { 
+									$(this).remove();
+								} );
+								
+								}
+							);
 							
 							
-							/*
-							$.post("/content/file_checkout/", { dir: "stuff here" }, function(data) {
-								alert("returned: " + data);
-								//$(c).find('.start').html('');
-								//$(c).removeClass('wait').append(data);
-								//if( o.root == t ) $(c).find('UL:hidden').show(); else $(c).find('UL:hidden').slideDown({ duration: o.expandSpeed, easing: o.expandEasing });
-								//bindTree(c);
-							})*/
+							
 						}
 						return false;
 					});
 					// Prevent A from triggering the # on non-click events
 					if( o.folderEvent.toLowerCase != 'click' ) $(t).find('LI A').bind('click', function() { return false; });
 				}
+				
+				// bind our restore button
+				$('#restore').bind( 'click', function() {
+							
+					var files_to_restore = [];				
+					var li_obj = $('#my_checkout').find('LI');
+					
+					li_obj.each( function() {
+						files_to_restore.push($(this).find('A').attr('rel'));
+					});
+				
+					$.post("/content/file_restore/", JSON.stringify({files: files_to_restore}), function(data) {
+						alert("returned: " + data);
+					});
+				});
+				
+				
 				// Loading message
 				$(this).html('<ul class="jqueryFileTree start"><li class="wait">' + o.loadMessage + '<li></ul>');
 				
 				// For the checkout div
 				$('#my_checkout').html('<ul class="jqueryFileTree"></ul>');
+				
+				// Hide our submit button until something is clicked
+				$('#restore').hide();
+				
 				// Get the initial file list
 				showTree( $(this), "", "");
 			});

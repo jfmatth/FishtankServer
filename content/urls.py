@@ -10,7 +10,7 @@ from content.views import ( HomeView,
                         AccountFilterView, 
                         AccountDownloadView, 
                         AccountFileDirView,
-                        AccountFileCheckoutView )
+                        AccountFileRestoreView )
 
 urlpatterns = patterns('',
     url(r'^home/', HomeView.as_view(), name="content_home"),
@@ -22,6 +22,6 @@ urlpatterns = patterns('',
     url(r'^filter/', login_required(AccountFilterView.as_view()), name="content_filter"),
     url(r'^download/', login_required(AccountDownloadView.as_view()), name="content_download"),
     url(r'^file_dir/', AccountFileDirView.as_view(), name="content_filedir"),
-    url(r'^file_checkout/', AccountFileCheckoutView.as_view(), name="content_filecheckout"),
+    url(r'^file_restore/', AccountFileRestoreView.as_view(), name="content_filerestore"),
     #(r'^profile/', login_required(ProfileView.as_view())),    
 )
