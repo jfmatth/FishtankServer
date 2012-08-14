@@ -95,11 +95,12 @@ if(jQuery) (function($){
 							var li_class = $(this).parent().attr('class')
 							var a_class = $(this).attr('class')
 							var a_rel = $(this).attr('rel')
+							var a_id  = $(this).attr('id')
 							
 							//$(this).attr('rel')
 							//$('#my_checkout').find('UL').append($(this).attr('rel'));
 							$('#my_checkout').find('UL').append('<li class="'+li_class+
-																'"><a href="#" class="'+a_class+'" rel="'+a_rel+'">'+a_rel+'</a></li>');
+																'"><a href="#" class="'+a_class+'" rel="'+a_rel+'" id="'+a_id+'">'+a_rel+'</a></li>');
 							if (!$('#restore').is(":visible") ) {
 								$('#restore').show();
 							}
@@ -123,15 +124,32 @@ if(jQuery) (function($){
 					if( o.folderEvent.toLowerCase != 'click' ) $(t).find('LI A').bind('click', function() { return false; });
 				}
 				
-				// bind our restore button
+				// bind our restore button.  this is triggered when restore is clicked to submit files.
 				$('#restore').bind( 'click', function() {
 							
-					var files_to_restore = [];				
+					var files_to_restore = {};				
 					var li_obj = $('#my_checkout').find('LI');
 					
+					
+					// Get list of files
 					li_obj.each( function() {
-						files_to_restore.push($(this).find('A').attr('rel'));
+						host = $(this).find('A').attr('class');
+						// file might be unnecessary now?
+						//file = $(this).find('A').attr('rel');
+						id = $(this).find('A').attr('id');
+						
+						if (!files_to_restore[host]) {
+							files_to_restore[host] = Array();
+						}
+						
+						files_to_restore[host].push(id);
+						
 					});
+					
+					//alert("test " + files_to_restore);
+					
+					// Get host name
+					
 				
 					$.post("/content/file_restore/", JSON.stringify({files: files_to_restore}), function(data) {
 						alert("returned: " + data);

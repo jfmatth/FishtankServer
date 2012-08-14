@@ -11,6 +11,8 @@ from django.shortcuts import redirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
+from sets import Set
+
 # Public views
 class HomeView(TemplateView):
     template_name = "content/home.html"
@@ -140,9 +142,10 @@ class AccountFileDirView(TemplateView):
                 
                 for f in files:
                     e=os.path.splitext(f.filename)[1][1:] # get .ext and remove dot
-                    r.append('<li class="file ext_%s"><a href="#" class="%s" rel="%s">%s</a></li>' % (e,
+                    r.append('<li class="file ext_%s"><a href="#" class="%s" rel="%s" id="%s">%s</a></li>' % (e,
                                                                                                       hostname,
                                                                                                       os.path.normpath(f.fullpath + f.filename),
+                                                                                                      f.id,
                                                                                                       f.filename))
                 
                 
@@ -164,14 +167,38 @@ class AccountFileRestoreView(TemplateView):
     success_url = "/"
     
     def post(self, request, *args, **kwargs):
-        
-        #self.context['somecrap'] = "this is a test of context"
-        
+             
         print "I'm here!"
+        print request.raw_post_data
+        print "after"
         post_data = simplejson.loads(request.raw_post_data)
         
-        for file in post_data['files']:
-            print file
+        hosts = post_data['files']
+        restores = []
+        
+        try:
+            for host, files in hosts.items():
+                print host
+                client = ManagedClient.objects.get(hostname=host)
+            
+                # Right now client and restoreclient are the same thing. :)
+                restore = Restore(client=client, retoreclient=client, requested=datetime.datetime.now(), completed=False, status="R")
+                restore.save()
+                
+                #restore_set = Set()                
+                for file in files:
+                    print "fileid: ", file
+                    file = File.objects.get(id=file)
+                    restore_file = RestoreFile(restore=restore, file=file, status="R", completed=False)
+                    restore_file.save()
+        except Exception, e:
+            print e
+
+        
+        #print files['tbackup1']
+        
+        #for file in post_data['files']:
+            #print file
 
 
         #if request.POST['one']:
