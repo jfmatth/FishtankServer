@@ -91,4 +91,4 @@ UL.jqueryFileTree A:hover {
 .jqueryFileTree LI.ext_zip { background: url(images/zip.png) left top no-repeat; }
 
 /* additional CSS */
-.jqueryFileTree LI.restore { font-weight: bold; }
+.jqueryFileTree LI A.restore { font-weight: bold; }

@@ -31,6 +31,19 @@
 // is copyright 2008 A Beautiful Site, LLC. 
 //
 
+
+// Toggle the restore button for the checkout tree
+function toggle_restore_button() {
+	if ( $('#my_checkout').find('UL LI').length < 1 ) {
+		$('#restore').hide();
+		$('#restore_header').hide();
+	} else {
+		$('#restore').show();
+		$('#restore_header').show();
+	}
+}
+
+
 if(jQuery) (function($){
 
 	$.extend($.fn, {
@@ -81,54 +94,46 @@ if(jQuery) (function($){
 							}
 						} else {
 							// this fires off when we click a file in the file tree
-							
-							/* bolds the css style...
-							if ( $(this).parent().hasClass('restore') ) {
-								$(this).parent().removeClass('restore');
-							} else {
-								$(this).parent().addClass('restore');
-							}*/
 												
 							var li_class = $(this).parent().attr('class')
 							var a_class = $(this).attr('class')
 							var a_rel = $(this).attr('rel')
 							var a_id  = $(this).attr('id')
 							
-							
-							// See if we've already added this file.
+							// See if we've already added this file to the checkout tree.
 							var exists = false;
 							$('#my_checkout').find('LI A').each( function() {
 							
-									if ( $(this).attr('id') == a_id ) {
+									if ( $(this).attr('id').substring(1) == a_id ) {
 										exists = true;
-									} 							
+									} 
 								}
 							)
 							
+							// Add our new file in if it doesn't already exist in the checkout branch
+							// prepend a "c" to the file id for the checked out file ids (it has to be unique within the document)
 							if (exists == false) {		
 								$('#my_checkout').find('UL').append('<li class="'+li_class+
-																	'"><a href="#" class="'+a_class+'" rel="'+a_rel+'" id="'+a_id+'">'+a_rel+'</a></li>');
-								if (!$('#restore').is(":visible") ) {
-									$('#restore').show();
-								}
-							}
-							
-							
-							// bind this function to remove files from checkout tree if they're clicked
-							var li_obj = $('#my_checkout').find('LI');
-							li_obj.each( function() {
-								$(this).bind(o.folderEvent, function() { 
-									$(this).remove();
+																	'"><a href="#" class="'+a_class+'" rel="'+a_rel+'" id="c'+a_id+'">'+a_rel+'</a></li>');
+								
+								$('LI A#c'+a_id).bind(o.folderEvent, function() { 
+									$(this).parent().remove();
+									
+									// Remove bold class from corresponding entry in file tree
+									$('LI A#'+a_id).removeClass('restore');
+									
+									toggle_restore_button();
 						
-									if ( $('#my_checkout').find('UL LI').length < 1 ) {
-										$('#restore').hide();
-									}			
 								} );
 								
-								}
-							);
-							
-							
+								$('LI A#'+a_id).addClass('restore'); // bold the entry in file tree
+								
+								toggle_restore_button();
+							} else {
+								$('LI A#c'+a_id).parent().remove();
+								$('LI A#'+a_id).removeClass('restore'); // unbold the entry in filetree
+								toggle_restore_button();
+							}
 							
 						}
 						return false;
@@ -159,11 +164,7 @@ if(jQuery) (function($){
 						
 					});
 					
-					//alert("test " + files_to_restore);
-					
-					// Get host name
-					
-				
+									
 					$.post("/content/file_restore/", JSON.stringify({files: files_to_restore}), function(data) {
 						alert("returned: " + data);
 					});
@@ -176,7 +177,8 @@ if(jQuery) (function($){
 				// For the checkout div
 				$('#my_checkout').html('<ul class="jqueryFileTree"></ul>');
 				
-				// Hide our submit button until something is clicked
+				// Hide our submit button and restore header until something is clicked
+				$('#restore_header').hide();
 				$('#restore').hide();
 				
 				// Get the initial file list

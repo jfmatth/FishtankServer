@@ -144,7 +144,7 @@ class AccountFileDirView(TemplateView):
                     e=os.path.splitext(f.filename)[1][1:] # get .ext and remove dot
                     r.append('<li class="file ext_%s"><a href="#" class="%s" rel="%s" id="%s">%s</a></li>' % (e,
                                                                                                       hostname,
-                                                                                                      os.path.normpath(f.fullpath + f.filename),
+                                                                                                      os.path.normpath(f.fullpath + "/" + f.filename),
                                                                                                       f.id,
                                                                                                       f.filename))
                 
