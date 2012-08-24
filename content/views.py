@@ -73,7 +73,7 @@ class AccountFileDirView(TemplateView):
         if get_hosts:
             hosts = ManagedClient.objects.filter(company__username=request.user.username)
             for h in hosts:
-                r.append('<li class="directory collapsed"><a href="#" class="%s" rel="%s">%s</a></li>' % (h.hostname, "c:\\\\",h.hostname))
+                r.append('<li class="directory collapsed"><a href="#" class="%s" rel="%s">%s</a></li>' % (h.hostname, "c:/",h.hostname))
             r.append('</ul>')
         else:        
             try:
@@ -90,20 +90,20 @@ class AccountFileDirView(TemplateView):
                 print "your host", hostname
                 
                 # deal with the backslash on the root "c:\" drives
-                if os.path.normpath(dirpath) == os.path.normpath('c:\\'):  #'c:\\\\':
+                if os.path.normpath(dirpath) == os.path.normpath('c:/'):  #'c:\\\\':
                     print "setting up regex for root"
                     f_regex = dirpath + r"$"
                     #d_regex = dirpath + r"[^\\]+\\.+$"
                     # original d_regex was not picking up all directories...
-                    d_regex = dirpath + r"[^\\]+(\\.+)*$"          
+                    d_regex = dirpath + r"[^/]+(/.+)*$"          
                 
                 else:              
                     print "setting up regex for subtree"
                     f_regex = dirpath + "$"
                     #d_regex = dirpath + r"\\[^\\]+\\.+$"
                     # original d_regex was not picking up all directories...
-                    d_regex = dirpath + r"\\[^\\]+(\\.+)*$"
-                    dirpath = dirpath + "\\\\"
+                    d_regex = dirpath + r"/[^/]+(/.+)*$"
+                    dirpath = dirpath + "/"
                 
                 print "f_regex", f_regex
                 print "d_regex", d_regex
@@ -118,10 +118,10 @@ class AccountFileDirView(TemplateView):
                     #print "stripping", os.path.normpath(dirpath), "from ", d['fullpath']
                     dir_prefix = d['fullpath'][len(os.path.normpath(dirpath)):]
                     #print "prefix ", dir_prefix
-                    dir_prefix = dir_prefix.lstrip("\\")
+                    dir_prefix = dir_prefix.lstrip("/")
                     #print "stripped prefix ", dir_prefix
                     
-                    dir_prefix = dir_prefix.split("\\", 1)[0]
+                    dir_prefix = dir_prefix.split("/", 1)[0]
                     
                     #print "prefix", dir_prefix
                     s.add(dir_prefix)

@@ -37,7 +37,7 @@ if(jQuery) (function($){
 		fileTree: function(o, h) {
 			// Defaults
 			if( !o ) var o = {};
-			if( o.root == undefined ) o.root = 'c:\\';
+			if( o.root == undefined ) o.root = 'c:/';
 			if( o.script == undefined ) o.script = 'jqueryFileTree.php';
 			if( o.folderEvent == undefined ) o.folderEvent = 'click';
 			if( o.expandSpeed == undefined ) o.expandSpeed= 500;
@@ -80,7 +80,7 @@ if(jQuery) (function($){
 								$(this).parent().removeClass('expanded').addClass('collapsed');
 							}
 						} else {
-							// this fires off when we click a file in the checkout tree
+							// this fires off when we click a file in the file tree
 							
 							/* bolds the css style...
 							if ( $(this).parent().hasClass('restore') ) {
@@ -88,28 +88,41 @@ if(jQuery) (function($){
 							} else {
 								$(this).parent().addClass('restore');
 							}*/
-							
-							//h("Selected " + $(this).attr('rel') + " for restore.  Good for you!");
-							
-							
+												
 							var li_class = $(this).parent().attr('class')
 							var a_class = $(this).attr('class')
 							var a_rel = $(this).attr('rel')
 							var a_id  = $(this).attr('id')
 							
-							//$(this).attr('rel')
-							//$('#my_checkout').find('UL').append($(this).attr('rel'));
-							$('#my_checkout').find('UL').append('<li class="'+li_class+
-																'"><a href="#" class="'+a_class+'" rel="'+a_rel+'" id="'+a_id+'">'+a_rel+'</a></li>');
-							if (!$('#restore').is(":visible") ) {
-								$('#restore').show();
+							
+							// See if we've already added this file.
+							var exists = false;
+							$('#my_checkout').find('LI A').each( function() {
+							
+									if ( $(this).attr('id') == a_id ) {
+										exists = true;
+									} 							
+								}
+							)
+							
+							if (exists == false) {		
+								$('#my_checkout').find('UL').append('<li class="'+li_class+
+																	'"><a href="#" class="'+a_class+'" rel="'+a_rel+'" id="'+a_id+'">'+a_rel+'</a></li>');
+								if (!$('#restore').is(":visible") ) {
+									$('#restore').show();
+								}
 							}
 							
 							
+							// bind this function to remove files from checkout tree if they're clicked
 							var li_obj = $('#my_checkout').find('LI');
 							li_obj.each( function() {
 								$(this).bind(o.folderEvent, function() { 
 									$(this).remove();
+						
+									if ( $('#my_checkout').find('UL LI').length < 1 ) {
+										$('#restore').hide();
+									}			
 								} );
 								
 								}
