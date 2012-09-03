@@ -17,7 +17,7 @@
          "macaddr": "00", 
          "verified": false, 
          "downloaded": null, 
-         "ipaddr": "", 
+         "ipaddr": "255.255.255.255", 
          "company": 1, 
          "hostname": "global", 
          "privatekey": "n/a", 

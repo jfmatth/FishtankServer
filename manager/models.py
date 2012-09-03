@@ -104,9 +104,9 @@ class DiskSpace(models.Model):
         diskfree  - How much free space is there.
         date      - When was this entry made (self updating).
     """
-    cloud = models.IntegerField()
-    size  = models.IntegerField()
-    free  = models.IntegerField()
+    cloud = models.BigIntegerField()
+    size  = models.BigIntegerField()
+    free  = models.BigIntegerField()
     date  = models.DateTimeField()
     
     client = models.ForeignKey(ManagedClient)

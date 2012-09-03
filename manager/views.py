@@ -1,7 +1,7 @@
 import user
 from django.http import HttpResponse, HttpResponseBadRequest
 
-from manager.models import ManagedClient, ClientSetting, Backup, Verification, DiskSpace, Restore, RestoreFile
+from manager.models import ManagedClient, ClientSetting, Backup, File, Verification, DiskSpace, Restore, RestoreFile
 from dtracker.models import Torrent
 
 from django import forms
@@ -14,6 +14,8 @@ import anydbm
 import os   
 import datetime
 import urllib
+
+NEWUPLOAD = True
 
 GLOBALKEY = "__global__"
 
@@ -57,24 +59,49 @@ def handledbm(rPOST, rFILES):
 
         newbackup.save()
 
-        # now add all the files from the DB as files under this backup.
-        db = anydbm.open(uploaddbm, 'r')
-        for key in db:
-            d = json.loads(db[key])
-            newbackup.file_set.create(
-                filename = os.path.basename(d['filename']),
-                fullpath = os.path.dirname(d['filename']).replace("\\", "/"),
-                crc = d['crc'],
-                size = d['size'],
-                moddate = datetime.datetime.strptime(d['modified'],DATETIMEFMT),
-                accdate = datetime.datetime.strptime(d['accessed'],DATETIMEFMT),
-                createdate = datetime.datetime.strptime(d['created'],DATETIMEFMT)
-            )
-
+        if NEWUPLOAD:
+            bulk_files = []
+            db = anydbm.open(uploaddbm, 'r')
+            for key in db:
+                d = json.loads(db[key])
+                bulk_files.append(
+                    File(
+                            backup = newbackup,
+                            filename = os.path.basename(d['filename']),
+                            fullpath = os.path.dirname(d['filename']).replace("\\", "/"),
+                            crc = d['crc'],
+                            size = d['size'],
+                            moddate = datetime.datetime.strptime(d['modified'],DATETIMEFMT),
+                            accdate = datetime.datetime.strptime(d['accessed'],DATETIMEFMT),
+                            createdate = datetime.datetime.strptime(d['created'],DATETIMEFMT)
+                        )
+                    )
+            try:
+                File.objects.bulk_create(bulk_files)
+            except Exception as e:
+                print "error bulk inserting %s" % e
+                
+        else:
+            # now add all the files from the DB as files under this backup.
+            db = anydbm.open(uploaddbm, 'r')
+            for key in db:
+                d = json.loads(db[key])
+                newbackup.file_set.create(
+                    filename = os.path.basename(d['filename']),
+                    fullpath = os.path.dirname(d['filename']).replace("\\", "/"),
+                    crc = d['crc'],
+                    size = d['size'],
+                    moddate = datetime.datetime.strptime(d['modified'],DATETIMEFMT),
+                    accdate = datetime.datetime.strptime(d['accessed'],DATETIMEFMT),
+                    createdate = datetime.datetime.strptime(d['created'],DATETIMEFMT)
+                )
+                print ".",
+    
         db.close()
         os.remove(uploaddbm)
-
+    
         return True
+    
     except ObjectDoesNotExist:
         return False
 
