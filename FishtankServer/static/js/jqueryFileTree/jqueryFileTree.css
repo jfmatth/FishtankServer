@@ -89,3 +89,6 @@ UL.jqueryFileTree A:hover {
 .jqueryFileTree LI.ext_xls { background: url(images/xls.png) left top no-repeat; }
 .jqueryFileTree LI.ext_xml { background: url(images/code.png) left top no-repeat; }
 .jqueryFileTree LI.ext_zip { background: url(images/zip.png) left top no-repeat; }
+
+/* additional CSS */
+.jqueryFileTree LI A.restore { font-weight: bold; }

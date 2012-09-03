@@ -357,8 +357,15 @@ def restore(request, guid):
                     RestoreDict['restores'][l.file.backup.torrent.info_hash]  = {'key': l.file.backup.encryptkey,
                                                                     'zipfile': l.file.backup.torrent.name,
                                                                     'files':[] }
+                
+                # we need to account for directory paths with slashes (subdirs) and no slashes (root)
+                if not l.file.fullpath.endswith("/"):
+                    ffp = l.file.fullpath + "/"
+                else:
+                    ffp = l.file.fullpath
+                    
                 # use .append() instead of +=
-                RestoreDict['restores'][l.file.backup.torrent.info_hash]['files'].append( (l.file.fullpath+"\\"+l.file.filename, l.file.id) )
+                RestoreDict['restores'][l.file.backup.torrent.info_hash]['files'].append( (ffp+l.file.filename, l.file.id) )
 
             # now we have a dict of what we want, just JSON it and return it
             return HttpResponse( json.dumps(RestoreDict) )

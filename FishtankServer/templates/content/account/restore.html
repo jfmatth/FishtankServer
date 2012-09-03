@@ -3,33 +3,51 @@
 
 
 
-
-<div class="row">
-
+<div class="container-fluid">
+<div class="row-fluid">
 <div class="span2">
+
 	{% include "content/account/nav_left.html" %}
-</div>
-
-<div class="span1"> </div>
-
-
-<div class="span7">
-This is the account restore page.<br />
-
-
-
-
-
-
-<div id="my_tree">
 
 </div>
+<div style="text-align: left" class="span10">
 
 
+	<div class="row-fluid">
+		<p><h4>Files available for restore:</h4></p>
+		<div id="my_tree"></div>
+	</div>
+	
+	<div class="row-fluid">
+	<br />
+	</div>
+	
+	<div class="row-fluid">
+		<div id="restore_header"><p><h4>Restore these files:</h4></p></div>
+		<div id="my_checkout"></div><br />
+		<a id="restore" class="btn btn-primary" href="#">Restore</a>
+		</div>
+	</div>
+	
+	
 
 </div>
-
 </div>
+</div>
+
+
+
+
+<!-- just temporarily giving some space. -->
+<div class="row">
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+</div>
+
 
 
 

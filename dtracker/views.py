@@ -3,7 +3,6 @@
 # 8/22   - JFM, added checktorrent view.
 # 7/2008 - Created
 
-
 from django.http import HttpResponse, HttpResponseBadRequest
 from cgi import parse_qs
 from django.http import HttpResponseRedirect

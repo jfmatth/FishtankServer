@@ -137,8 +137,6 @@ INSTALLED_APPS = (
 ACCOUNT_ACTIVATION_DAYS=14
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-DEFAULT_FROM_EMAIL="Kyle.F@uhnd.com"
-EMAIL_HOST="mail.uhnd.com"
 #EMAIL_HOST="webmail.richweb.com"
 EMAIL_PORT=25
 #EMAIL_USE_TLS=True
@@ -177,6 +175,6 @@ LOGGING = {
 
 
 try:
-    from settings_local import *
+    import settings_local 
 except:
     pass

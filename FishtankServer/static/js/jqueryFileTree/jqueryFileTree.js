@@ -31,13 +31,26 @@
 // is copyright 2008 A Beautiful Site, LLC. 
 //
 
+
+// Toggle the restore button for the checkout tree
+function toggle_restore_button() {
+	if ( $('#my_checkout').find('UL LI').length < 1 ) {
+		$('#restore').hide();
+		$('#restore_header').hide();
+	} else {
+		$('#restore').show();
+		$('#restore_header').show();
+	}
+}
+
+
 if(jQuery) (function($){
 
 	$.extend($.fn, {
 		fileTree: function(o, h) {
 			// Defaults
 			if( !o ) var o = {};
-			if( o.root == undefined ) o.root = '/';
+			if( o.root == undefined ) o.root = 'c:/';
 			if( o.script == undefined ) o.script = 'jqueryFileTree.php';
 			if( o.folderEvent == undefined ) o.folderEvent = 'click';
 			if( o.expandSpeed == undefined ) o.expandSpeed= 500;
@@ -46,12 +59,12 @@ if(jQuery) (function($){
 			if( o.collapseEasing == undefined ) o.collapseEasing = null;
 			if( o.multiFolder == undefined ) o.multiFolder = true;
 			if( o.loadMessage == undefined ) o.loadMessage = 'Loading...';
-					
+			
 			$(this).each( function() {
-				function showTree(c, t) {
-					//$(c).addClass('wait');
+				function showTree(c, t, h) {
+					$(c).addClass('wait');
 					$(".jqueryFileTree.start").remove();
-					$.post("http://10.0.0.1:8000/content/file_dir/", { dir: t }, function(data) {
+					$.post("/content/file_dir/", { dir: t, host: h }, function(data) {
 						$(c).find('.start').html('');
 						$(c).removeClass('wait').append(data);
 						if( o.root == t ) $(c).find('UL:hidden').show(); else $(c).find('UL:hidden').slideDown({ duration: o.expandSpeed, easing: o.expandEasing });
@@ -69,7 +82,10 @@ if(jQuery) (function($){
 									$(this).parent().parent().find('LI.directory').removeClass('expanded').addClass('collapsed');
 								}
 								$(this).parent().find('UL').remove(); // cleanup
-								showTree( $(this).parent(), escape($(this).attr('rel').match( /.*\// )) );
+								
+								
+								
+								showTree( $(this).parent(), escape($(this).attr('rel').match( /.*/ )), escape($(this).attr('class').match( /.*/ )) );
 								$(this).parent().removeClass('collapsed').addClass('expanded');
 							} else {
 								// Collapse
@@ -77,17 +93,96 @@ if(jQuery) (function($){
 								$(this).parent().removeClass('expanded').addClass('collapsed');
 							}
 						} else {
-							h($(this).attr('rel'));
+							// this fires off when we click a file in the file tree
+												
+							var li_class = $(this).parent().attr('class')
+							var a_class = $(this).attr('class')
+							var a_rel = $(this).attr('rel')
+							var a_id  = $(this).attr('id')
+							
+							// See if we've already added this file to the checkout tree.
+							var exists = false;
+							$('#my_checkout').find('LI A').each( function() {
+							
+									if ( $(this).attr('id').substring(1) == a_id ) {
+										exists = true;
+									} 
+								}
+							)
+							
+							// Add our new file in if it doesn't already exist in the checkout branch
+							// prepend a "c" to the file id for the checked out file ids (it has to be unique within the document)
+							if (exists == false) {		
+								$('#my_checkout').find('UL').append('<li class="'+li_class+
+																	'"><a href="#" class="'+a_class+'" rel="'+a_rel+'" id="c'+a_id+'">'+a_rel+'</a></li>');
+								
+								$('LI A#c'+a_id).bind(o.folderEvent, function() { 
+									$(this).parent().remove();
+									
+									// Remove bold class from corresponding entry in file tree
+									$('LI A#'+a_id).removeClass('restore');
+									
+									toggle_restore_button();
+						
+								} );
+								
+								$('LI A#'+a_id).addClass('restore'); // bold the entry in file tree
+								
+								toggle_restore_button();
+							} else {
+								$('LI A#c'+a_id).parent().remove();
+								$('LI A#'+a_id).removeClass('restore'); // unbold the entry in filetree
+								toggle_restore_button();
+							}
+							
 						}
 						return false;
 					});
 					// Prevent A from triggering the # on non-click events
 					if( o.folderEvent.toLowerCase != 'click' ) $(t).find('LI A').bind('click', function() { return false; });
 				}
+				
+				// bind our restore button.  this is triggered when restore is clicked to submit files.
+				$('#restore').bind( 'click', function() {
+							
+					var files_to_restore = {};				
+					var li_obj = $('#my_checkout').find('LI');
+					
+					
+					// Get list of files
+					li_obj.each( function() {
+						host = $(this).find('A').attr('class');
+						// file might be unnecessary now?
+						//file = $(this).find('A').attr('rel');
+						id = $(this).find('A').attr('id');
+						
+						if (!files_to_restore[host]) {
+							files_to_restore[host] = Array();
+						}
+						
+						files_to_restore[host].push(id);
+						
+					});
+					
+									
+					$.post("/content/file_restore/", JSON.stringify({files: files_to_restore}), function(data) {
+						alert("returned: " + data);
+					});
+				});
+				
+				
 				// Loading message
 				$(this).html('<ul class="jqueryFileTree start"><li class="wait">' + o.loadMessage + '<li></ul>');
+				
+				// For the checkout div
+				$('#my_checkout').html('<ul class="jqueryFileTree"></ul>');
+				
+				// Hide our submit button and restore header until something is clicked
+				$('#restore_header').hide();
+				$('#restore').hide();
+				
 				// Get the initial file list
-				showTree( $(this), "" );
+				showTree( $(this), "", "");
 			});
 		}
 	});
